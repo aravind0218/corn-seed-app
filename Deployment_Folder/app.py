@@ -12,46 +12,30 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- FRONTEND: NEW CLASSY THEME (ONLY UI) ---
+# --- FRONTEND: LIGHT GREEN SHADED THEME (ONLY UI) ---
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Color tokens (inspired by your Tailwind config) */
-:root {
-    --bg: #f5f8f4;
-    --fg: #123022;
-
-    --card-bg: #ffffff;
-    --card-border: #d4e4d8;
-
-    --primary: #1a7f4b;
-    --primary-soft: #e1f4ea;
-
-    --accent: #f3c758;
-
-    --high: #1ea463;
-    --medium: #f4b000;
-    --low: #d64242;
-}
-
-/* Global */
+/* Global shady light-green background */
 .stApp {
-    background: radial-gradient(circle at top left, #f7faf7 0, #edf7f0 40%, #e0f0e7 100%);
+    background: radial-gradient(circle at top left, #edf7f1 0, #e0f1e6 40%, #d4ebdd 75%, #cbe3d4 100%);
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: var(--fg);
+    color: #102418;
 }
 
+/* Ensure all default text uses Inter */
 html, body, [class*="css"] {
-    color: var(--fg);
+    color: #102418;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-/* Headings */
-h1, h2, h3, h4 {
+/* Headings use Playfair */
+h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
 }
 
+/* Main title */
 h1 {
     text-align: center;
     letter-spacing: 0.05em;
@@ -61,33 +45,33 @@ h1 {
 
 .agri-tagline {
     text-align: center;
-    color: #647067;
+    color: #4b6354;
     font-size: 0.95rem;
     margin-bottom: 1.3rem;
 }
 
-/* Card */
+/* Main card on top of green background */
 .main-card {
-    background: var(--card-bg);
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 18px;
     padding: 2rem 2.4rem;
-    border: 1px solid var(--card-border);
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+    border: 1px solid #c7dbcc;
+    box-shadow: 0 18px 40px rgba(12, 32, 20, 0.16);
 }
 
-/* Section titles */
+/* Section label */
 .section-label {
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #6b7280;
+    color: #647267;
     font-weight: 600;
     margin-bottom: 0.7rem;
 }
 
 /* Buttons */
 div.stButton > button {
-    background: linear-gradient(135deg, var(--primary), #15623a);
+    background: linear-gradient(135deg, #1a7f4b, #155e38);
     color: #f9fafb;
     border-radius: 999px;
     padding: 0.55rem 1.4rem;
@@ -97,7 +81,7 @@ div.stButton > button {
     transition: all 0.18s ease;
 }
 div.stButton > button:hover {
-    background: linear-gradient(135deg, #15623a, var(--primary));
+    background: linear-gradient(135deg, #155e38, #1a7f4b);
     transform: translateY(-1px);
     box-shadow: 0 16px 32px rgba(21, 98, 58, 0.55);
 }
@@ -106,29 +90,29 @@ div.stButton > button:hover {
 div[data-testid="stFileUploader"] {
     border-radius: 14px;
     padding: 1.4rem;
-    background: #f8faf8;
-    border: 1px dashed var(--card-border);
+    background: #f3f9f4;
+    border: 1px dashed #c7dbcc;
 }
 
-/* Sidebar */
+/* Sidebar with soft green */
 section[data-testid="stSidebar"] {
-    background: #f6faf6;
-    border-right: 1px solid #d8e6da;
+    background: linear-gradient(180deg, #edf7f1 0%, #dbeee3 100%);
+    border-right: 1px solid #c7dbcc;
 }
 section[data-testid="stSidebar"] * {
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-    color: #1c2b21 !important;
+    color: #183325 !important;
 }
 .sidebar-title {
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #6b7280;
+    color: #647267;
     font-weight: 600;
     margin-bottom: 0.6rem;
 }
 
-/* Image */
+/* Image preview */
 div[data-testid="stImage"] img {
     border-radius: 14px;
     box-shadow: 0 12px 28px rgba(15, 23, 42, 0.35);
@@ -147,22 +131,22 @@ div[data-testid="stImage"] img {
     margin-bottom: 0.3rem;
 }
 .quality-high {
-    background: var(--high);
+    background: #1ea463;
     color: #f9fafb;
 }
 .quality-medium {
-    background: var(--medium);
+    background: #f4b000;
     color: #3b2a08;
 }
 .quality-low {
-    background: var(--low);
+    background: #d64242;
     color: #f9fafb;
 }
 
 /* Footer */
 .agri-footer {
     text-align: center;
-    color: #6b7280;
+    color: #647267;
     font-size: 0.85rem;
     margin-top: 2rem;
 }
@@ -221,7 +205,7 @@ def process_and_predict(image_data, model):
 # --- TOP TEXT ---
 st.title("AgriScan Pro")
 st.markdown(
-    "<p class='agri-tagline'>Elegant AI assistant for corn seed quality control.</p>",
+    "<p class='agri-tagline'>Shaded light‑green studio for corn seed quality analysis.</p>",
     unsafe_allow_html=True
 )
 st.write("Determine if your batch is **High**, **Medium**, or **Low** quality.")
@@ -234,7 +218,7 @@ if model is None:
 # --- MAIN CARD ---
 st.markdown("<div class='main-card'>", unsafe_allow_html=True)
 
-# Sidebar: Input Selection (logic unchanged)
+# Sidebar: Input Selection (backend logic unchanged)
 with st.sidebar:
     st.markdown("<div class='sidebar-title'>Input mode</div>", unsafe_allow_html=True)
     mode = st.radio("Choose source:", ["📁 Upload Image", "📷 Capture Image"])
@@ -300,4 +284,4 @@ if file_input is not None:
                 st.error("❌ REJECTED: Seed integrity compromised.")
 
 st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<p class='agri-footer'>AgriScan Pro · Playfair Display & Inter · Green Studio Theme</p>", unsafe_allow_html=True)
+st.markdown("<p class='agri-footer'>AgriScan Pro · Shady Light‑Green Theme</p>", unsafe_allow_html=True)
