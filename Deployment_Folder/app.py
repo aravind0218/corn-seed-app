@@ -12,197 +12,142 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- FRONTEND: PLAYFAIR + INTER, GREEN THEME ---
+# --- FRONTEND: CLASSY THEME (ONLY UI) ---
 st.markdown("""
-<style>
-/* Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+    <style>
+    /* Elegant font */
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap');
 
-/* CSS variables approximating your Tailwind theme */
-:root {
-    --background: hsl(120, 20%, 98%);
-    --foreground: hsl(140, 30%, 15%);
+    .stApp {
+        background: radial-gradient(circle at top left, #f4f5fb 0, #e7edf8 28%, #dfe7fb 55%, #cfd9f6 75%, #c1c4f0 100%);
+        font-family: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: #0f172a;
+    }
 
-    --card: hsl(0, 0%, 100%);
-    --card-foreground: hsl(140, 30%, 15%);
+    /* Top title */
+    h1 {
+        color: #0b1020;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.15rem;
+    }
 
-    --primary: hsl(142, 55%, 35%);
-    --primary-foreground: hsl(0, 0%, 100%);
+    .agri-tagline {
+        text-align: center;
+        color: #4b5563;
+        font-size: 0.98rem;
+        margin-bottom: 1.4rem;
+    }
 
-    --muted: hsl(120, 15%, 92%);
-    --muted-foreground: hsl(140, 15%, 45%);
+    /* Main glass card */
+    .main-card {
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(18px);
+        border-radius: 24px;
+        padding: 2.2rem 2.6rem;
+        box-shadow: 0 20px 55px rgba(15,23,42,0.16);
+        border: 1px solid rgba(148,163,184,0.5);
+    }
 
-    --accent: hsl(45, 90%, 55%);
-    --accent-foreground: hsl(40, 50%, 15%);
+    .main-card h2, .main-card h3, .main-card p, .main-card label {
+        color: #111827 !important;
+    }
 
-    --border: hsl(140, 20%, 88%);
+    /* Headings inside card */
+    .section-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #6b7280;
+        margin-bottom: 0.9rem;
+    }
 
-    --quality-high: hsl(142, 70%, 45%);
-    --quality-medium: hsl(45, 90%, 50%);
-    --quality-low: hsl(0, 70%, 55%);
+    /* Buttons – subtle, not neon */
+    div.stButton > button {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #f9fafb;
+        border-radius: 999px;
+        padding: 0.6rem 1.1rem;
+        font-weight: 600;
+        border: 0;
+        box-shadow: 0 12px 30px rgba(5,150,105,0.32);
+        transition: all 0.18s ease;
+    }
+    div.stButton > button:hover {
+        background: linear-gradient(135deg, #047857, #059669);
+        transform: translateY(-1px);
+        box-shadow: 0 18px 38px rgba(5,150,105,0.45);
+    }
 
-    --gradient-start: hsl(142, 55%, 35%);
-    --gradient-end: hsl(160, 50%, 45%);
-}
+    /* File uploader – minimal */
+    div[data-testid="stFileUploader"] {
+        border: 1px dashed #9ca3af;
+        border-radius: 18px;
+        padding: 1.6rem;
+        background: #f9fafb;
+        color: #111827 !important;
+    }
 
-/* Global */
-.stApp {
-    background: radial-gradient(circle at top left, var(--background) 0, #e6f4ea 45%, #d4f1e1 100%);
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: var(--foreground);
-}
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #f9fafb 0%, #eef2ff 100%);
+        border-right: 1px solid rgba(148,163,184,0.4);
+    }
+    section[data-testid="stSidebar"] * {
+        font-family: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        color: #111827 !important;
+    }
 
-/* Typography */
-html, body, [class*="css"]  {
-    color: var(--foreground);
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
+    /* Sidebar header */
+    .sidebar-header {
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #6b7280;
+        margin-bottom: 0.8rem;
+    }
 
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
-}
+    /* Image preview */
+    div[data-testid="stImage"] img {
+        border-radius: 18px;
+        box-shadow: 0 14px 38px rgba(15,23,42,0.35);
+    }
 
-/* Main title */
-h1 {
-    text-align: center;
-    letter-spacing: 0.04em;
-    font-weight: 600;
-    color: var(--foreground);
-    margin-bottom: 0.25rem;
-}
+    /* Result text colors – softer but clear */
+    .grade-text-high {
+        color: #047857;
+    }
+    .grade-text-medium {
+        color: #d97706;
+    }
+    .grade-text-low {
+        color: #b91c1c;
+    }
 
-.agri-tagline {
-    text-align: center;
-    color: var(--muted-foreground);
-    font-size: 0.95rem;
-    margin-bottom: 1.4rem;
-}
-
-/* Utility classes */
-.gradient-primary {
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-}
-
-.text-gradient {
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.glass-effect {
-    backdrop-filter: blur(14px);
-    background: rgba(255, 255, 255, 0.88);
-}
-
-/* Main card */
-.main-card {
-    border-radius: 18px;
-    padding: 2rem 2.4rem;
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
-    border: 1px solid var(--border);
-}
-
-/* Section title */
-.section-title {
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted-foreground);
-    font-weight: 600;
-    margin-bottom: 0.8rem;
-}
-
-/* Buttons */
-div.stButton > button {
-    background: linear-gradient(135deg, #16a34a, #15803d);
-    color: var(--primary-foreground);
-    border-radius: 999px;
-    padding: 0.55rem 1.2rem;
-    font-weight: 600;
-    border: none;
-    box-shadow: 0 12px 28px rgba(22, 163, 74, 0.35);
-    transition: all 0.18s ease;
-}
-div.stButton > button:hover {
-    background: linear-gradient(135deg, #15803d, #16a34a);
-    transform: translateY(-1px);
-    box-shadow: 0 18px 34px rgba(22, 163, 74, 0.48);
-}
-
-/* File uploader */
-div[data-testid="stFileUploader"] {
-    border-radius: 16px;
-    padding: 1.5rem;
-    background: #f9fafb;
-    border: 1px dashed var(--border);
-}
-
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background: hsl(120, 20%, 97%);
-    border-right: 1px solid var(--border);
-}
-section[data-testid="stSidebar"] * {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-    color: hsl(140, 30%, 20%) !important;
-}
-.sidebar-header {
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted-foreground);
-    font-weight: 600;
-    margin-bottom: 0.6rem;
-}
-
-/* Image */
-div[data-testid="stImage"] img {
-    border-radius: 16px;
-    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.35);
-}
-
-/* Quality badges */
-.quality-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.35rem 0.9rem;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
-.quality-high {
-    background: var(--quality-high);
-    color: #f9fafb;
-}
-.quality-medium {
-    background: var(--quality-medium);
-    color: var(--accent-foreground);
-}
-.quality-low {
-    background: var(--quality-low);
-    color: #f9fafb;
-}
-
-/* Footer */
-.agri-footer {
-    text-align: center;
-    color: var(--muted-foreground);
-    font-size: 0.85rem;
-    margin-top: 2rem;
-}
-</style>
+    /* Footer */
+    .agri-footer {
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin-top: 2rem;
+    }
+    </style>
 """, unsafe_allow_html=True)
 
 # --- BACKEND: LOAD ASSETS (UNCHANGED) ---
 @st.cache_resource
 def load_assets():
+    # 1. Find the folder where this app.py is running
     base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # 2. Build the full paths to the files
     model_path = os.path.join(base_dir, 'corn_model.h5')
     json_path = os.path.join(base_dir, 'classes.json')
 
+    # 3. Load Model
     try:
         model = tf.keras.models.load_model(model_path)
     except Exception as e:
@@ -210,9 +155,11 @@ def load_assets():
         st.error(f"Details: {e}")
         return None, None
         
+    # 4. Load Class Mappings
     try:
         with open(json_path, 'r') as f:
             class_indices = json.load(f)
+        # Invert dictionary to map ID -> Class Name
         label_map = {v: k for k, v in class_indices.items()}
     except Exception as e:
         st.error(f"🚨 Critical Error: Could not load classes.json from {json_path}")
@@ -224,28 +171,33 @@ model, label_map = load_assets()
 
 # --- BACKEND: PREDICTION ENGINE (UNCHANGED) ---
 def process_and_predict(image_data, model):
+    # Resize to match training input
     size = (224, 224)
     image = ImageOps.fit(image_data, size, Image.Resampling.LANCZOS)
     img_array = np.asarray(image)
+    
+    # Normalize pixel values
     img_array = img_array / 255.0
+    
+    # Reshape for Batch (1, 224, 224, 3)
     img_reshape = np.expand_dims(img_array, axis=0)
+    
+    # Prediction
     prediction = model.predict(img_reshape)
     return prediction
 
-# --- TOP CONTENT ---
-st.markdown("<h1 class='text-gradient'>AgriScan Pro</h1>", unsafe_allow_html=True)
-st.markdown(
-    "<p class='agri-tagline'>Nature-inspired AI for accurate corn seed quality grading.</p>",
-    unsafe_allow_html=True
-)
+# --- TOP TEXT ---
+st.title("AgriScan Pro")
+st.markdown("<p class='agri-tagline'>Precision corn seed quality assessment for farms, labs and exporters.</p>", unsafe_allow_html=True)
 st.write("Determine if your batch is **High**, **Medium**, or **Low** quality.")
 
+# Check if model loaded correctly
 if model is None:
     st.warning("⚠️ Please ensure 'corn_model.h5' and 'classes.json' are in the same folder as this app.py file.")
     st.stop()
 
-# --- MAIN CARD ---
-st.markdown("<div class='main-card glass-effect'>", unsafe_allow_html=True)
+# --- MAIN CARD CONTAINER ---
+st.markdown("<div class='main-card'>", unsafe_allow_html=True)
 
 # Sidebar (same logic)
 with st.sidebar:
@@ -254,6 +206,7 @@ with st.sidebar:
     st.info("Supported formats: JPG, PNG")
 
 file_input = None
+
 if mode == "📁 Upload Image":
     file_input = st.file_uploader("Upload seed image...", type=["jpg", "jpeg", "png"])
 elif mode == "📷 Capture Image":
@@ -261,39 +214,48 @@ elif mode == "📷 Capture Image":
 
 # --- EXECUTION LOGIC (UNCHANGED) ---
 if file_input is not None:
+    # Display Input
     st.markdown("<div class='section-title'>Specimen preview</div>", unsafe_allow_html=True)
     image = Image.open(file_input)
     st.image(image, caption="Input Specimen", width=320)
     
     if st.button("Analyze quality"):
-        with st.spinner("Processing image with neural network..."):
+        with st.spinner("Running neural network on image..."):
             preds = process_and_predict(image, model)
+            
+            # Get highest probability
             result_idx = np.argmax(preds)
             confidence = np.max(preds) * 100
             
+            # Map raw label to Quality Grade
             if label_map:
-                raw_label = label_map[result_idx]
+                raw_label = label_map[result_idx]  # e.g., 'healthy', 'broken'
             else:
                 raw_label = str(result_idx)
+            
+            # Quality Logic Mapping (unchanged rules)
+            quality_grade = ""
+            css_class = ""
             
             raw_label_clean = raw_label.lower()
 
             if "healthy" in raw_label_clean:
                 quality_grade = "HIGH QUALITY"
-                badge_class = "quality-high"
+                css_class = "grade-text-high"
             elif "discolored" in raw_label_clean or "silkcut" in raw_label_clean:
                 quality_grade = "MEDIUM QUALITY"
-                badge_class = "quality-medium"
+                css_class = "grade-text-medium"
             else:
                 quality_grade = "LOW QUALITY"
-                badge_class = "quality-low"
+                css_class = "grade-text-low"
 
             st.markdown("---")
             st.markdown(
-                f"<div class='quality-badge {badge_class}'>{quality_grade}</div>",
+                f"<h3 class='{css_class}'>Grade: {quality_grade}</h3>",
                 unsafe_allow_html=True
             )
             st.caption(f"Detected Class: {raw_label.title()} | Confidence: {confidence:.2f}%")
+            
             st.progress(int(confidence))
             
             if quality_grade == "HIGH QUALITY":
@@ -304,4 +266,5 @@ if file_input is not None:
                 st.error("Rejected: Seed integrity compromised.")
 
 st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<p class='agri-footer'>AgriScan Pro · Playfair Display & Inter · Nature Green Theme</p>", unsafe_allow_html=True)
+
+st.markdown("<p class='agri-footer'>AgriScan Pro · TensorFlow · Streamlit</p>", unsafe_allow_html=True)
