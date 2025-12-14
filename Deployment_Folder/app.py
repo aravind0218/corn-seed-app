@@ -40,21 +40,21 @@ h1 {
     text-align: center;
     letter-spacing: 0.05em;
     font-weight: 600;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.4rem;
 }
 
 .agri-tagline {
     text-align: center;
     color: #425448;
     font-size: 0.95rem;
-    margin-bottom: 1.3rem;
+    margin-bottom: 1.1rem;
 }
 
 /* Card sitting on green background */
 .main-card {
     background: rgba(255, 255, 255, 0.96);
     border-radius: 18px;
-    padding: 2rem 2.4rem;
+    padding: 1.8rem 2.2rem;
     border: 1px solid #c2d9c8;
     box-shadow: 0 18px 40px rgba(8, 24, 14, 0.16);
 }
@@ -94,10 +94,10 @@ div[data-testid="stFileUploader"] {
     border: 1px dashed #c2d9c8;
 }
 
-/* Key change: style the Browse files button text */
+/* Make Browse files text bold white */
 div[data-testid="stFileUploader"] button {
-    font-weight: 700 !important;        /* bold */
-    color: #ffffff !important;          /* white text */
+    font-weight: 700 !important;
+    color: #ffffff !important;
 }
 
 /* Sidebar with its own light-green shading */
@@ -162,14 +162,10 @@ div[data-testid="stImage"] img {
 # --- BACKEND: LOAD ASSETS (UNCHANGED) ---
 @st.cache_resource
 def load_assets():
-    # 1. Find the folder where this app.py is running
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # 2. Build the full paths to the files
     model_path = os.path.join(base_dir, 'corn_model.h5')
     json_path = os.path.join(base_dir, 'classes.json')
 
-    # 3. Load Model
     try:
         model = tf.keras.models.load_model(model_path)
     except Exception as e:
@@ -177,11 +173,9 @@ def load_assets():
         st.error(f"Details: {e}")
         return None, None
         
-    # 4. Load Class Mappings
     try:
         with open(json_path, 'r') as f:
             class_indices = json.load(f)
-        # Invert dictionary to map ID -> Class Name
         label_map = {v: k for k, v in class_indices.items()}
     except Exception as e:
         st.error(f"🚨 Critical Error: Could not load classes.json from {json_path}")
@@ -193,36 +187,31 @@ model, label_map = load_assets()
 
 # --- BACKEND: PREDICTION ENGINE (UNCHANGED) ---
 def process_and_predict(image_data, model):
-    # Resize to match training input
     size = (224, 224)
     image = ImageOps.fit(image_data, size, Image.Resampling.LANCZOS)
     img_array = np.asarray(image)
-    
-    # Normalize pixel values
     img_array = img_array / 255.0
-    
-    # Reshape for Batch (1, 224, 224, 3)
     img_reshape = np.expand_dims(img_array, axis=0)
-    
-    # Prediction
     prediction = model.predict(img_reshape)
     return prediction
 
-# --- TOP TEXT ---
+# --- TOP TEXT (OUTSIDE CARD) ---
 st.title("AgriScan Pro")
 st.markdown(
     "<p class='agri-tagline'>Upload images of corn seeds and get instant quality classification using advanced AI technology. Categorize seeds as HIGH, MEDIUM, or LOW quality with confidence scores.</p>",
     unsafe_allow_html=True
 )
+
+# --- MAIN CARD ---
+st.markdown("<div class='main-card'>", unsafe_allow_html=True)
+
+# Description line MOVED INSIDE card
 st.write("Determine if your batch is **High**, **Medium**, or **Low** quality.")
 
 # Check if model loaded correctly
 if model is None:
     st.warning("⚠️ Please ensure 'corn_model.h5' and 'classes.json' are in the same folder as this app.py file.")
     st.stop()
-
-# --- MAIN CARD ---
-st.markdown("<div class='main-card'>", unsafe_allow_html=True)
 
 # Sidebar: Input Selection (backend logic unchanged)
 with st.sidebar:
@@ -246,21 +235,16 @@ if file_input is not None:
     if st.button("Analyze quality"):
         with st.spinner("Processing image with the neural network..."):
             preds = process_and_predict(image, model)
-            
-            # Get highest probability
             result_idx = np.argmax(preds)
             confidence = np.max(preds) * 100
             
-            # Map raw label to Quality Grade
             if label_map:
-                raw_label = label_map[result_idx]  # e.g., 'healthy', 'broken'
+                raw_label = label_map[result_idx]
             else:
                 raw_label = str(result_idx)
             
-            # Quality Logic Mapping
             quality_grade = ""
             pill_class = ""
-            
             raw_label_clean = raw_label.lower()
 
             if "healthy" in raw_label_clean:
@@ -269,7 +253,7 @@ if file_input is not None:
             elif "discolored" in raw_label_clean or "silkcut" in raw_label_clean:
                 quality_grade = "MEDIUM QUALITY"
                 pill_class = "quality-medium"
-            else:  # broken or anything else
+            else:
                 quality_grade = "LOW QUALITY"
                 pill_class = "quality-low"
 
@@ -279,7 +263,6 @@ if file_input is not None:
                 unsafe_allow_html=True
             )
             st.caption(f"Detected Class: {raw_label.title()} | Confidence: {confidence:.2f}%")
-            
             st.progress(int(confidence))
             
             if quality_grade == "HIGH QUALITY":
