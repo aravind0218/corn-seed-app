@@ -205,7 +205,7 @@ def process_and_predict(image_data, model):
 # --- TOP TEXT ---
 st.title("AgriScan Pro")
 st.markdown(
-    "<p class='agri-tagline'>Shaded light‑green interface for corn seed quality analysis.</p>",
+    "<p class='Upload images of corn seeds and get instant quality classification using advanced AI technology. Categorize seeds as HIGH, MEDIUM, or LOW quality with confidence scores.</p>",
     unsafe_allow_html=True
 )
 st.write("Determine if your batch is **High**, **Medium**, or **Low** quality.")
