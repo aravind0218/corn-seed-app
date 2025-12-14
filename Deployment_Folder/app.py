@@ -12,19 +12,19 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- FRONTEND: LIGHT GREEN SHADED THEME (ONLY UI) ---
+# --- FRONTEND: SHADED LIGHT-GREEN BACKGROUND ---
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Global shady light-green background */
+/* REAL change: app background is shaded light-green */
 .stApp {
-    background: radial-gradient(circle at top left, #edf7f1 0, #e0f1e6 40%, #d4ebdd 75%, #cbe3d4 100%);
+    background: radial-gradient(circle at top left, #e9f7ec 0, #d6efdf 35%, #c5e4d2 65%, #b3d8c4 100%);
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: #102418;
 }
 
-/* Ensure all default text uses Inter */
+/* Global text */
 html, body, [class*="css"] {
     color: #102418;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -45,18 +45,18 @@ h1 {
 
 .agri-tagline {
     text-align: center;
-    color: #4b6354;
+    color: #425448;
     font-size: 0.95rem;
     margin-bottom: 1.3rem;
 }
 
-/* Main card on top of green background */
+/* Card sitting on green background */
 .main-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.96);
     border-radius: 18px;
     padding: 2rem 2.4rem;
-    border: 1px solid #c7dbcc;
-    box-shadow: 0 18px 40px rgba(12, 32, 20, 0.16);
+    border: 1px solid #c2d9c8;
+    box-shadow: 0 18px 40px rgba(8, 24, 14, 0.16);
 }
 
 /* Section label */
@@ -64,7 +64,7 @@ h1 {
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #647267;
+    color: #5f6f63;
     font-weight: 600;
     margin-bottom: 0.7rem;
 }
@@ -90,14 +90,14 @@ div.stButton > button:hover {
 div[data-testid="stFileUploader"] {
     border-radius: 14px;
     padding: 1.4rem;
-    background: #f3f9f4;
-    border: 1px dashed #c7dbcc;
+    background: #f3faf4;
+    border: 1px dashed #c2d9c8;
 }
 
-/* Sidebar with soft green */
+/* Sidebar with its own light-green shading */
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #edf7f1 0%, #dbeee3 100%);
-    border-right: 1px solid #c7dbcc;
+    background: linear-gradient(180deg, #e9f7ec 0%, #d2eede 100%);
+    border-right: 1px solid #c2d9c8;
 }
 section[data-testid="stSidebar"] * {
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
@@ -107,7 +107,7 @@ section[data-testid="stSidebar"] * {
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #647267;
+    color: #5f6f63;
     font-weight: 600;
     margin-bottom: 0.6rem;
 }
@@ -146,7 +146,7 @@ div[data-testid="stImage"] img {
 /* Footer */
 .agri-footer {
     text-align: center;
-    color: #647267;
+    color: #5f6f63;
     font-size: 0.85rem;
     margin-top: 2rem;
 }
@@ -205,7 +205,7 @@ def process_and_predict(image_data, model):
 # --- TOP TEXT ---
 st.title("AgriScan Pro")
 st.markdown(
-    "<p class='agri-tagline'>Shaded light‑green studio for corn seed quality analysis.</p>",
+    "<p class='agri-tagline'>Shaded light‑green interface for corn seed quality analysis.</p>",
     unsafe_allow_html=True
 )
 st.write("Determine if your batch is **High**, **Medium**, or **Low** quality.")
@@ -284,4 +284,4 @@ if file_input is not None:
                 st.error("❌ REJECTED: Seed integrity compromised.")
 
 st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<p class='agri-footer'>AgriScan Pro · Shady Light‑Green Theme</p>", unsafe_allow_html=True)
+st.markdown("<p class='agri-footer'>AgriScan Pro · Shaded Light‑Green Theme</p>", unsafe_allow_html=True)
