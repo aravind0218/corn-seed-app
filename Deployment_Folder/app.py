@@ -12,94 +12,132 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- FRONTEND: CUSTOM CSS (ONLY UI CHANGES) ---
+# --- FRONTEND: CLASSY THEME (ONLY UI) ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    /* Elegant font */
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap');
 
-    .stApp { 
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        font-family: 'Poppins', sans-serif;
+    .stApp {
+        background: radial-gradient(circle at top left, #f4f5fb 0, #e7edf8 28%, #dfe7fb 55%, #cfd9f6 75%, #c1c4f0 100%);
+        font-family: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: #0f172a;
     }
 
-    /* Top main title on gradient background */
+    /* Top title */
     h1 {
-        color: #ffffff;
-        font-family: 'Poppins', sans-serif;
+        color: #0b1020;
         text-align: center;
         font-weight: 700;
-        border-bottom: none;
-        padding-bottom: 0;
-        text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        margin-bottom: 0.2rem;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.15rem;
     }
 
-    /* Subheading under title */
-    .agri-subtitle {
+    .agri-tagline {
         text-align: center;
-        color: #e5e7eb;
-        font-size: 1.1rem;
-        margin-bottom: 1.5rem;
+        color: #4b5563;
+        font-size: 0.98rem;
+        margin-bottom: 1.4rem;
     }
 
-    /* Main card that holds uploader + text */
+    /* Main glass card */
     .main-card {
-        background: #f9fafb;                 /* light gray so dark text is visible */
-        border-radius: 22px;
-        padding: 2rem 2.5rem;
-        box-shadow: 0 18px 40px rgba(15,23,42,0.25);
-        border: 1px solid #e5e7eb;
-        margin-top: 1.5rem;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(18px);
+        border-radius: 24px;
+        padding: 2.2rem 2.6rem;
+        box-shadow: 0 20px 55px rgba(15,23,42,0.16);
+        border: 1px solid rgba(148,163,184,0.5);
     }
 
     .main-card h2, .main-card h3, .main-card p, .main-card label {
-        color: #111827 !important;           /* dark text inside card */
+        color: #111827 !important;
     }
 
-    /* Buttons */
-    div.stButton > button {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
-        color: white;
-        border: none;
-        border-radius: 14px;
-        padding: 12px 24px;
+    /* Headings inside card */
+    .section-title {
+        font-size: 1.05rem;
         font-weight: 600;
-        width: 100%;
-        box-shadow: 0 10px 25px rgba(22,163,74,0.45);
-        transition: all 0.2s ease;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #6b7280;
+        margin-bottom: 0.9rem;
+    }
+
+    /* Buttons – subtle, not neon */
+    div.stButton > button {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #f9fafb;
+        border-radius: 999px;
+        padding: 0.6rem 1.1rem;
+        font-weight: 600;
+        border: 0;
+        box-shadow: 0 12px 30px rgba(5,150,105,0.32);
+        transition: all 0.18s ease;
     }
     div.stButton > button:hover {
-        background: linear-gradient(135deg, #16a34a, #22c55e);
+        background: linear-gradient(135deg, #047857, #059669);
         transform: translateY(-1px);
-        box-shadow: 0 16px 30px rgba(22,163,74,0.6);
+        box-shadow: 0 18px 38px rgba(5,150,105,0.45);
     }
 
-    /* File uploader */
+    /* File uploader – minimal */
     div[data-testid="stFileUploader"] {
-        border: 2px dashed #22c55e;
-        border-radius: 16px;
-        padding: 1.8rem;
-        background-color: #ffffff;
+        border: 1px dashed #9ca3af;
+        border-radius: 18px;
+        padding: 1.6rem;
+        background: #f9fafb;
+        color: #111827 !important;
     }
 
     /* Sidebar */
     section[data-testid="stSidebar"] {
-        background: rgba(249,250,251,0.96);
+        background: linear-gradient(180deg, #f9fafb 0%, #eef2ff 100%);
+        border-right: 1px solid rgba(148,163,184,0.4);
     }
     section[data-testid="stSidebar"] * {
+        font-family: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
         color: #111827 !important;
-        font-family: 'Poppins', sans-serif;
     }
 
-    /* Image styling */
+    /* Sidebar header */
+    .sidebar-header {
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #6b7280;
+        margin-bottom: 0.8rem;
+    }
+
+    /* Image preview */
     div[data-testid="stImage"] img {
-        border-radius: 16px;
-        box-shadow: 0 10px 25px rgba(15,23,42,0.35);
+        border-radius: 18px;
+        box-shadow: 0 14px 38px rgba(15,23,42,0.35);
+    }
+
+    /* Result text colors – softer but clear */
+    .grade-text-high {
+        color: #047857;
+    }
+    .grade-text-medium {
+        color: #d97706;
+    }
+    .grade-text-low {
+        color: #b91c1c;
+    }
+
+    /* Footer */
+    .agri-footer {
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin-top: 2rem;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- UTILITY: LOAD ASSETS (BACKEND UNCHANGED) ---
+# --- BACKEND: LOAD ASSETS (UNCHANGED) ---
 @st.cache_resource
 def load_assets():
     # 1. Find the folder where this app.py is running
@@ -131,7 +169,7 @@ def load_assets():
 
 model, label_map = load_assets()
 
-# --- PREDICTION ENGINE (BACKEND UNCHANGED) ---
+# --- BACKEND: PREDICTION ENGINE (UNCHANGED) ---
 def process_and_predict(image_data, model):
     # Resize to match training input
     size = (224, 224)
@@ -148,9 +186,9 @@ def process_and_predict(image_data, model):
     prediction = model.predict(img_reshape)
     return prediction
 
-# --- FRONTEND UI (SAME LOGIC, BETTER LOOK) ---
-st.title("🌽 AgriScan Pro")
-st.markdown("<p class='agri-subtitle'>Automated Corn Seed Quality Control</p>", unsafe_allow_html=True)
+# --- TOP TEXT ---
+st.title("AgriScan Pro")
+st.markdown("<p class='agri-tagline'>Precision corn seed quality assessment for farms, labs and exporters.</p>", unsafe_allow_html=True)
 st.write("Determine if your batch is **High**, **Medium**, or **Low** quality.")
 
 # Check if model loaded correctly
@@ -158,12 +196,12 @@ if model is None:
     st.warning("⚠️ Please ensure 'corn_model.h5' and 'classes.json' are in the same folder as this app.py file.")
     st.stop()
 
-# Wrap main area in card
+# --- MAIN CARD CONTAINER ---
 st.markdown("<div class='main-card'>", unsafe_allow_html=True)
 
-# Sidebar: Input Selection (unchanged logic)
+# Sidebar (same logic)
 with st.sidebar:
-    st.header("Input Mode")
+    st.markdown("<div class='sidebar-header'>Input mode</div>", unsafe_allow_html=True)
     mode = st.radio("Choose source:", ["📁 Upload Image", "📷 Capture Image"])
     st.info("Supported formats: JPG, PNG")
 
@@ -177,11 +215,12 @@ elif mode == "📷 Capture Image":
 # --- EXECUTION LOGIC (UNCHANGED) ---
 if file_input is not None:
     # Display Input
+    st.markdown("<div class='section-title'>Specimen preview</div>", unsafe_allow_html=True)
     image = Image.open(file_input)
-    st.image(image, caption="Input Specimen", width=300)
+    st.image(image, caption="Input Specimen", width=320)
     
-    if st.button("Analyze Quality"):
-        with st.spinner("Processing neural network..."):
+    if st.button("Analyze quality"):
+        with st.spinner("Running neural network on image..."):
             preds = process_and_predict(image, model)
             
             # Get highest probability
@@ -194,41 +233,38 @@ if file_input is not None:
             else:
                 raw_label = str(result_idx)
             
-            # Quality Logic Mapping (Customize these keywords based on your folder names!)
+            # Quality Logic Mapping (unchanged rules)
             quality_grade = ""
-            color = ""
+            css_class = ""
             
-            # Convert label to lowercase to be safe
             raw_label_clean = raw_label.lower()
 
             if "healthy" in raw_label_clean:
                 quality_grade = "HIGH QUALITY"
-                color = "green"
+                css_class = "grade-text-high"
             elif "discolored" in raw_label_clean or "silkcut" in raw_label_clean:
                 quality_grade = "MEDIUM QUALITY"
-                color = "orange"
-            else:  # broken or anything else
+                css_class = "grade-text-medium"
+            else:
                 quality_grade = "LOW QUALITY"
-                color = "red"
+                css_class = "grade-text-low"
 
-            # Display Results
             st.markdown("---")
-            st.markdown(f"### Grade: :{color}[{quality_grade}]")
+            st.markdown(
+                f"<h3 class='{css_class}'>Grade: {quality_grade}</h3>",
+                unsafe_allow_html=True
+            )
             st.caption(f"Detected Class: {raw_label.title()} | Confidence: {confidence:.2f}%")
             
-            # Progress bar for visual confidence
             st.progress(int(confidence))
             
             if quality_grade == "HIGH QUALITY":
-                st.success("✅ APPROVED: Suitable for premium export.")
+                st.success("Approved: Suitable for premium export.")
             elif quality_grade == "MEDIUM QUALITY":
-                st.warning("⚠️ ATTENTION: Check for fungal infection or moisture damage.")
+                st.warning("Attention: Check for fungal infection or moisture damage.")
             else:
-                st.error("❌ REJECTED: Seed integrity compromised.")
+                st.error("Rejected: Seed integrity compromised.")
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown(
-    "<p style='text-align:center; color:#e5e7eb; margin-top:2rem;'>Powered by TensorFlow & Streamlit 🌽</p>",
-    unsafe_allow_html=True
-)
+st.markdown("<p class='agri-footer'>AgriScan Pro · TensorFlow · Streamlit</p>", unsafe_allow_html=True)
