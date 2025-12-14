@@ -17,7 +17,7 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* REAL change: app background is shaded light-green */
+/* Shaded light-green app background */
 .stApp {
     background: radial-gradient(circle at top left, #e9f7ec 0, #d6efdf 35%, #c5e4d2 65%, #b3d8c4 100%);
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -69,7 +69,7 @@ h1 {
     margin-bottom: 0.7rem;
 }
 
-/* Buttons */
+/* Analyze button */
 div.stButton > button {
     background: linear-gradient(135deg, #1a7f4b, #155e38);
     color: #f9fafb;
@@ -94,7 +94,7 @@ div[data-testid="stFileUploader"] {
     border: 1px dashed #c2d9c8;
 }
 
-/* Make Browse files text bold white */
+/* Browse files button text: bold white */
 div[data-testid="stFileUploader"] button {
     font-weight: 700 !important;
     color: #ffffff !important;
@@ -159,13 +159,17 @@ div[data-testid="stImage"] img {
 </style>
 """, unsafe_allow_html=True)
 
-# --- BACKEND: LOAD ASSETS (UNCHANGED) ---
+# --- UTILITY: LOAD ASSETS (BACKEND UNCHANGED) ---
 @st.cache_resource
 def load_assets():
+    # 1. Find the folder where this app.py is running
     base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # 2. Build the full paths to the files
     model_path = os.path.join(base_dir, 'corn_model.h5')
     json_path = os.path.join(base_dir, 'classes.json')
 
+    # 3. Load Model
     try:
         model = tf.keras.models.load_model(model_path)
     except Exception as e:
@@ -173,9 +177,11 @@ def load_assets():
         st.error(f"Details: {e}")
         return None, None
         
+    # 4. Load Class Mappings
     try:
         with open(json_path, 'r') as f:
             class_indices = json.load(f)
+        # Invert dictionary to map ID -> Class Name
         label_map = {v: k for k, v in class_indices.items()}
     except Exception as e:
         st.error(f"🚨 Critical Error: Could not load classes.json from {json_path}")
@@ -185,27 +191,34 @@ def load_assets():
 
 model, label_map = load_assets()
 
-# --- BACKEND: PREDICTION ENGINE (UNCHANGED) ---
+# --- PREDICTION ENGINE (BACKEND UNCHANGED) ---
 def process_and_predict(image_data, model):
+    # Resize to match training input
     size = (224, 224)
     image = ImageOps.fit(image_data, size, Image.Resampling.LANCZOS)
     img_array = np.asarray(image)
+    
+    # Normalize pixel values
     img_array = img_array / 255.0
+    
+    # Reshape for Batch (1, 224, 224, 3)
     img_reshape = np.expand_dims(img_array, axis=0)
+    
+    # Prediction
     prediction = model.predict(img_reshape)
     return prediction
 
-# --- TOP TEXT (OUTSIDE CARD) ---
+# --- FRONTEND UI (ONLY TEXT POSITION CHANGED) ---
+
 st.title("AgriScan Pro")
 st.markdown(
     "<p class='agri-tagline'>Upload images of corn seeds and get instant quality classification using advanced AI technology. Categorize seeds as HIGH, MEDIUM, or LOW quality with confidence scores.</p>",
     unsafe_allow_html=True
 )
 
-# --- MAIN CARD ---
+# Put the white card and the “Determine…” line together
 st.markdown("<div class='main-card'>", unsafe_allow_html=True)
 
-# Description line MOVED INSIDE card
 st.write("Determine if your batch is **High**, **Medium**, or **Low** quality.")
 
 # Check if model loaded correctly
@@ -213,7 +226,7 @@ if model is None:
     st.warning("⚠️ Please ensure 'corn_model.h5' and 'classes.json' are in the same folder as this app.py file.")
     st.stop()
 
-# Sidebar: Input Selection (backend logic unchanged)
+# Sidebar: Input Selection (unchanged backend logic)
 with st.sidebar:
     st.markdown("<div class='sidebar-title'>Input mode</div>", unsafe_allow_html=True)
     mode = st.radio("Choose source:", ["📁 Upload Image", "📷 Capture Image"])
@@ -226,8 +239,9 @@ if mode == "📁 Upload Image":
 elif mode == "📷 Capture Image":
     file_input = st.camera_input("Take a photo of the seed")
 
-# --- EXECUTION LOGIC (UNCHANGED) ---
+# --- EXECUTION LOGIC (BACKEND UNCHANGED) ---
 if file_input is not None:
+    # Display Input
     st.markdown("<div class='section-label'>Specimen preview</div>", unsafe_allow_html=True)
     image = Image.open(file_input)
     st.image(image, caption="Input Specimen", width=320)
@@ -235,14 +249,18 @@ if file_input is not None:
     if st.button("Analyze quality"):
         with st.spinner("Processing image with the neural network..."):
             preds = process_and_predict(image, model)
+            
+            # Get highest probability
             result_idx = np.argmax(preds)
             confidence = np.max(preds) * 100
             
+            # Map raw label to Quality Grade
             if label_map:
-                raw_label = label_map[result_idx]
+                raw_label = label_map[result_idx]  # e.g., 'healthy', 'broken'
             else:
                 raw_label = str(result_idx)
             
+            # Quality Logic Mapping (unchanged rules)
             quality_grade = ""
             pill_class = ""
             raw_label_clean = raw_label.lower()
@@ -253,7 +271,7 @@ if file_input is not None:
             elif "discolored" in raw_label_clean or "silkcut" in raw_label_clean:
                 quality_grade = "MEDIUM QUALITY"
                 pill_class = "quality-medium"
-            else:
+            else:  # broken or anything else
                 quality_grade = "LOW QUALITY"
                 pill_class = "quality-low"
 
@@ -263,6 +281,7 @@ if file_input is not None:
                 unsafe_allow_html=True
             )
             st.caption(f"Detected Class: {raw_label.title()} | Confidence: {confidence:.2f}%")
+            
             st.progress(int(confidence))
             
             if quality_grade == "HIGH QUALITY":
