@@ -14,6 +14,7 @@ st.set_page_config(
 )
 
 # --- 2. PROFESSIONAL STYLING (CSS) ---
+# This forces the "Agri-Tech" theme regardless of your system's Dark Mode
 st.markdown("""
     <style>
     /* IMPORT GOOGLE FONT */
@@ -51,6 +52,14 @@ st.markdown("""
         margin-bottom: 0px;
     }
     
+    /* SUBHEADER */
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+    }
+
     /* BUTTON STYLE */
     div.stButton > button {
         background: linear-gradient(to right, #2E7D32, #43A047);
@@ -61,32 +70,50 @@ st.markdown("""
         font-size: 16px;
         font-weight: 600;
         width: 100%;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
         transition: all 0.3s;
     }
+    
     div.stButton > button:hover {
         transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
         background: linear-gradient(to right, #1B5E20, #2E7D32);
     }
+
+    /* SIDEBAR STYLE */
+    [data-testid="stSidebar"] {
+        background-color: #ffffff;
+        border-right: 1px solid #e0e0e0;
+    }
     
-    /* SUCCESS/ERROR BOX */
+    /* UPLOAD BOX STYLING */
+    [data-testid="stFileUploader"] section {
+        background-color: #f8f9fa;
+        border: 2px dashed #2E7D32;
+    }
+    
+    /* SUCCESS BOX */
     div.stAlert {
         border-radius: 10px;
-        color: #000000 !important; /* Force black text in alerts */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. LOGIC: LOAD ASSETS (REVERTED TO SIMPLE VERSION) ---
+# --- 3. LOGIC: LOAD ASSETS ---
 @st.cache_resource
 def load_assets():
-    # Simple load - assumes file is in the root working directory
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(base_dir, 'corn_model.h5')
+    json_path = os.path.join(base_dir, 'classes.json')
+
     try:
-        model = tf.keras.models.load_model('corn_model.h5')
+        model = tf.keras.models.load_model(model_path)
     except Exception as e:
         return None, None
         
     try:
-        with open('classes.json', 'r') as f:
+        with open(json_path, 'r') as f:
             class_indices = json.load(f)
         label_map = {v: k for k, v in class_indices.items()}
     except Exception as e:
@@ -108,23 +135,27 @@ def process_and_predict(image_data, model):
 
 # --- 5. UI LAYOUT ---
 
+# Top Header Area
 st.markdown("<h1>🌽 AgriScan Remote</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #666;'>Artificial Intelligence Seed Quality Control System</p>", unsafe_allow_html=True)
+st.markdown("<p class='subtitle'>Artificial Intelligence Seed Quality Control System</p>", unsafe_allow_html=True)
 
+# Main Container
 if model is None:
-    st.error("🚨 System Error: Model files not found. Ensure 'corn_model.h5' and 'classes.json' are in the repository root.")
+    st.error("🚨 System Error: Model files not found. Please check deployment.")
     st.stop()
 
 # Sidebar
 with st.sidebar:
+    st.image("https://cdn-icons-png.flaticon.com/512/188/188333.png", width=50)
     st.markdown("### Control Panel")
     mode = st.radio("Input Source", ["Upload Image", "Camera Capture"])
-    st.info("System Online: TensorFlow CPU")
+    st.markdown("---")
+    st.markdown("**System Status:** \n🟢 Online \n⚡ TensorFlow CPU")
 
 file_input = None
 
 # Input Section
-st.write("") 
+st.write("") # Spacer
 if mode == "Upload Image":
     file_input = st.file_uploader("Drop your corn seed image here", type=["jpg", "jpeg", "png"])
 else:
