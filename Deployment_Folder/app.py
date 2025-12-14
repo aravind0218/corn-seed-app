@@ -284,4 +284,4 @@ if file_input is not None:
                 st.error("❌ REJECTED: Seed integrity compromised.")
 
 st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<p class='agri-footer'>AgriScan Pro · Shaded Light‑Green Theme</p>", unsafe_allow_html=True)
+st.markdown("<p class='agri-footer'>Automated Corn Seed Quality Control</p>", unsafe_allow_html=True)
