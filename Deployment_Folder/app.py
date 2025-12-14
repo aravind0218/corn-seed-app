@@ -5,166 +5,177 @@ import numpy as np
 import json
 import os
 
-# --- PAGE SETUP ---
+# --- 1. CONFIGURATION ---
 st.set_page_config(
-    page_title="AgriScan: Corn Quality AI",
+    page_title="AgriScan AI",
     page_icon="🌽",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="expanded"
 )
 
-# --- FRONTEND: CUSTOM CSS STYLING ---
+# --- 2. PROFESSIONAL STYLING (CSS) ---
 st.markdown("""
     <style>
-    .stApp { background-color: #fcfdf5; }
-    h1 {
-        color: #2e7d32;
-        font-family: 'Helvetica', sans-serif;
-        text-align: center;
-        border-bottom: 3px solid #f9a825;
-        padding-bottom: 10px;
+    /* IMPORT GOOGLE FONT */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+    /* GLOBAL TEXT & BACKGROUND */
+    html, body, [class*="css"] {
+        font-family: 'Poppins', sans-serif;
     }
+    
+    /* MAIN BACKGROUND */
+    .stApp {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    /* TEXT COLORS (Force Dark Text) */
+    h1, h2, h3, p, div, label, span {
+        color: #2c3e50 !important;
+    }
+
+    /* CARD CONTAINER STYLE */
+    .css-1r6slb0, .stFileUploader {
+        background-color: #ffffff;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1px solid #e0e0e0;
+    }
+
+    /* HEADER STYLE */
+    h1 {
+        color: #2E7D32 !important; /* Forest Green */
+        text-align: center;
+        font-weight: 700;
+        margin-bottom: 0px;
+    }
+    
+    /* BUTTON STYLE */
     div.stButton > button {
-        background-color: #f9a825;
-        color: white;
+        background: linear-gradient(to right, #2E7D32, #43A047);
+        color: white !important;
         border: none;
-        border-radius: 10px;
-        padding: 10px 24px;
-        font-weight: bold;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-size: 16px;
+        font-weight: 600;
         width: 100%;
+        transition: all 0.3s;
     }
     div.stButton > button:hover {
-        background-color: #c17900;
-        color: white;
+        transform: translateY(-2px);
+        background: linear-gradient(to right, #1B5E20, #2E7D32);
     }
-    div[data-testid="stFileUploader"] {
-        border: 2px dashed #2e7d32;
+    
+    /* SUCCESS/ERROR BOX */
+    div.stAlert {
         border-radius: 10px;
-        padding: 20px;
-        background-color: #ffffff;
+        color: #000000 !important; /* Force black text in alerts */
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- UTILITY: LOAD ASSETS (FIXED) ---
+# --- 3. LOGIC: LOAD ASSETS (REVERTED TO SIMPLE VERSION) ---
 @st.cache_resource
 def load_assets():
-    # 1. Find the folder where this app.py is running
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # 2. Build the full paths to the files
-    model_path = os.path.join(base_dir, 'corn_model.h5')
-    json_path = os.path.join(base_dir, 'classes.json')
-
-    # 3. Load Model
+    # Simple load - assumes file is in the root working directory
     try:
-        model = tf.keras.models.load_model(model_path)
+        model = tf.keras.models.load_model('corn_model.h5')
     except Exception as e:
-        st.error(f"🚨 Critical Error: Could not load model from {model_path}")
-        st.error(f"Details: {e}")
         return None, None
         
-    # 4. Load Class Mappings
     try:
-        with open(json_path, 'r') as f:
+        with open('classes.json', 'r') as f:
             class_indices = json.load(f)
-        # Invert dictionary to map ID -> Class Name
         label_map = {v: k for k, v in class_indices.items()}
     except Exception as e:
-        st.error(f"🚨 Critical Error: Could not load classes.json from {json_path}")
         label_map = None
         
     return model, label_map
 
 model, label_map = load_assets()
 
-# --- PREDICTION ENGINE ---
+# --- 4. LOGIC: PREDICTION ---
 def process_and_predict(image_data, model):
-    # Resize to match training input
     size = (224, 224)
     image = ImageOps.fit(image_data, size, Image.Resampling.LANCZOS)
     img_array = np.asarray(image)
-    
-    # Normalize pixel values
     img_array = img_array / 255.0
-    
-    # Reshape for Batch (1, 224, 224, 3)
     img_reshape = np.expand_dims(img_array, axis=0)
-    
-    # Prediction
     prediction = model.predict(img_reshape)
     return prediction
 
-# --- FRONTEND UI ---
-st.title("🌽 AgriScan Remote")
-st.markdown("### Automated Corn Seed Quality Control")
-st.write("Determine if your batch is **High**, **Medium**, or **Low** quality.")
+# --- 5. UI LAYOUT ---
 
-# Check if model loaded correctly
+st.markdown("<h1>🌽 AgriScan Remote</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #666;'>Artificial Intelligence Seed Quality Control System</p>", unsafe_allow_html=True)
+
 if model is None:
-    st.warning("⚠️ Please ensure 'corn_model.h5' and 'classes.json' are in the same folder as this app.py file.")
+    st.error("🚨 System Error: Model files not found. Ensure 'corn_model.h5' and 'classes.json' are in the repository root.")
     st.stop()
 
-# Sidebar: Input Selection
+# Sidebar
 with st.sidebar:
-    st.header("Input Mode")
-    mode = st.radio("Choose source:", ["📁 Upload Image", "📷 Capture Image"])
-    st.info("Supported formats: JPG, PNG")
+    st.markdown("### Control Panel")
+    mode = st.radio("Input Source", ["Upload Image", "Camera Capture"])
+    st.info("System Online: TensorFlow CPU")
 
 file_input = None
 
-if mode == "📁 Upload Image":
-    file_input = st.file_uploader("Upload seed image...", type=["jpg", "jpeg", "png"])
-elif mode == "📷 Capture Image":
-    file_input = st.camera_input("Take a photo of the seed")
+# Input Section
+st.write("") 
+if mode == "Upload Image":
+    file_input = st.file_uploader("Drop your corn seed image here", type=["jpg", "jpeg", "png"])
+else:
+    file_input = st.camera_input("Capture Specimen")
 
-# --- EXECUTION LOGIC ---
+# Results Section
 if file_input is not None:
-    # Display Input
-    image = Image.open(file_input)
-    st.image(image, caption="Input Specimen", width=300)
+    col1, col2 = st.columns([1, 1])
     
-    if st.button("Analyze Quality"):
-        with st.spinner("Processing neural network..."):
-            preds = process_and_predict(image, model)
-            
-            # Get highest probability
-            result_idx = np.argmax(preds)
-            confidence = np.max(preds) * 100
-            
-            # Map raw label to Quality Grade
-            if label_map:
-                raw_label = label_map[result_idx] # e.g., 'healthy', 'broken'
-            else:
-                raw_label = str(result_idx)
-            
-            # Quality Logic Mapping (Customize these keywords based on your folder names!)
-            quality_grade = ""
-            color = ""
-            
-            # Convert label to lowercase to be safe
-            raw_label_clean = raw_label.lower()
+    with col1:
+        st.markdown("##### Input Specimen")
+        image = Image.open(file_input)
+        st.image(image, use_column_width=True, caption="Analyzed Image")
+    
+    with col2:
+        st.markdown("##### Analysis Results")
+        if st.button("Run Diagnostics"):
+            with st.spinner("Processing neural network..."):
+                preds = process_and_predict(image, model)
+                result_idx = np.argmax(preds)
+                confidence = np.max(preds) * 100
+                
+                if label_map:
+                    raw_label = label_map[result_idx].lower()
+                else:
+                    raw_label = str(result_idx)
 
-            if "healthy" in raw_label_clean:
-                quality_grade = "HIGH QUALITY"
-                color = "green"
-            elif "discolored" in raw_label_clean or "silkcut" in raw_label_clean:
-                quality_grade = "MEDIUM QUALITY"
-                color = "orange"
-            else: # broken or anything else
-                quality_grade = "LOW QUALITY"
-                color = "red"
+                # Quality Logic
+                if "healthy" in raw_label:
+                    grade = "EXPORT QUALITY"
+                    color = "#2E7D32" # Green
+                    msg = "Seed is healthy and viable."
+                    icon = "✅"
+                elif "discolored" in raw_label or "silkcut" in raw_label:
+                    grade = "PROCESSING QUALITY"
+                    color = "#F9A825" # Yellow
+                    msg = "Minor discoloration detected."
+                    icon = "⚠️"
+                else:
+                    grade = "REJECTED"
+                    color = "#C62828" # Red
+                    msg = "Seed is broken or damaged."
+                    icon = "❌"
 
-            # Display Results
-            st.markdown("---")
-            st.markdown(f"### Grade: :{color}[{quality_grade}]")
-            st.caption(f"Detected Class: {raw_label.title()} | Confidence: {confidence:.2f}%")
-            
-            # Progress bar for visual confidence
-            st.progress(int(confidence))
-            
-            if quality_grade == "HIGH QUALITY":
-                st.success("✅ APPROVED: Suitable for premium export.")
-            elif quality_grade == "MEDIUM QUALITY":
-                st.warning("⚠️ ATTENTION: Check for fungal infection or moisture damage.")
-            else:
-                st.error("❌ REJECTED: Seed integrity compromised.")
+                # Custom Result Card
+                st.markdown(f"""
+                <div style="background-color: {color}20; padding: 20px; border-radius: 10px; border-left: 5px solid {color};">
+                    <h3 style="color: {color} !important; margin:0;">{icon} {grade}</h3>
+                    <p style="margin-top: 5px; font-weight: bold;">Confidence: {confidence:.2f}%</p>
+                    <p style="font-size: 14px;">{msg}</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.progress(int(confidence))
