@@ -86,12 +86,18 @@ div.stButton > button:hover {
     box-shadow: 0 16px 32px rgba(21, 98, 58, 0.55);
 }
 
-/* File uploader */
+/* File uploader container */
 div[data-testid="stFileUploader"] {
     border-radius: 14px;
     padding: 1.4rem;
     background: #f3faf4;
     border: 1px dashed #c2d9c8;
+}
+
+/* Key change: style the Browse files button text */
+div[data-testid="stFileUploader"] button {
+    font-weight: 700 !important;        /* bold */
+    color: #ffffff !important;          /* white text */
 }
 
 /* Sidebar with its own light-green shading */
@@ -205,7 +211,7 @@ def process_and_predict(image_data, model):
 # --- TOP TEXT ---
 st.title("AgriScan Pro")
 st.markdown(
-    "<p class='Upload images of corn seeds and get instant quality classification using advanced AI technology. Categorize seeds as HIGH, MEDIUM, or LOW quality with confidence scores.</p>",
+    "<p class='agri-tagline'>Upload images of corn seeds and get instant quality classification using advanced AI technology. Categorize seeds as HIGH, MEDIUM, or LOW quality with confidence scores.</p>",
     unsafe_allow_html=True
 )
 st.write("Determine if your batch is **High**, **Medium**, or **Low** quality.")
