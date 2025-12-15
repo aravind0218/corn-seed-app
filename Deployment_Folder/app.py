@@ -11,58 +11,97 @@ import altair as alt
 st.set_page_config(
     page_title="AgriScan Dashboard",
     page_icon="🌽",
-    layout="wide", # Uses the full screen width for a dashboard feel
+    layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# --- 2. SESSION STATE (The "Brain" of the Dashboard) ---
-# This remembers data while you are using the app
+# --- 2. SESSION STATE ---
 if 'history' not in st.session_state:
     st.session_state['history'] = []
 if 'counts' not in st.session_state:
     st.session_state['counts'] = {'High': 0, 'Medium': 0, 'Low': 0}
 
-# --- 3. CUSTOM DASHBOARD STYLING ---
+# --- 3. CUSTOM DASHBOARD STYLING (UI ONLY) ---
 st.markdown("""
 <style>
-    /* Dashboard Background */
+    /* Dashboard Background – slightly darker gray-blue */
     .stApp {
-        background-color: #f4f6f9;
+        background-color: #e5e9f0;
+        color: #111827; /* dark text for contrast */
     }
-    
+
+    /* Make all default text dark */
+    html, body, [class*="css"] {
+        color: #111827;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
     /* Metrics Cards */
     div[data-testid="stMetric"] {
-        background-color: white;
+        background-color: #ffffff;
         padding: 15px;
         border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        border: 1px solid #e0e0e0;
+        box-shadow: 0 3px 8px rgba(15,23,42,0.06);
+        border: 1px solid #d1d5db;
     }
-    
+
     /* Sidebar styling */
     section[data-testid="stSidebar"] {
-        background-color: #ffffff;
-        border-right: 1px solid #e0e0e0;
+        background: #f9fafb;
+        border-right: 1px solid #d1d5db;
     }
-    
+    section[data-testid="stSidebar"] * {
+        color: #111827 !important;
+    }
+
     /* Headers */
     h1, h2, h3 {
-        font-family: 'Helvetica', sans-serif;
-        color: #2c3e50;
+        font-family: "Playfair Display", "Helvetica", serif;
+        color: #111827;
     }
-    
+
+    /* Subheader text */
+    .small-muted {
+        color: #4b5563;
+        font-size: 0.95rem;
+    }
+
     /* Buttons */
     div.stButton > button {
-        background-color: #2E7D32;
-        color: white;
-        border-radius: 5px;
+        background: linear-gradient(135deg, #2E7D32, #1b5e20);
+        color: #ffffff;
+        border-radius: 6px;
         border: none;
         padding: 0.5rem 1rem;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(34,139,34,0.35);
+    }
+    div.stButton > button:hover {
+        background: linear-gradient(135deg, #1b5e20, #2E7D32);
+        transform: translateY(-1px);
+    }
+
+    /* File uploader card */
+    div[data-testid="stFileUploader"] {
+        border-radius: 10px;
+        background-color: #f3f4f6;
+        border: 1px dashed #d1d5db;
+    }
+
+    /* Make 'Browse files' text bold & white */
+    div[data-testid="stFileUploader"] button {
+        font-weight: 700 !important;
+        color: #ffffff !important;
+    }
+
+    /* Dataframe header text darker */
+    .blank.dataframe, .stDataFrame {
+        color: #111827;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. BACKEND LOGIC (Same as before) ---
+# --- 4. BACKEND LOGIC (UNCHANGED) ---
 @st.cache_resource
 def load_assets():
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -98,7 +137,7 @@ def process_and_predict(image_data, model):
 
 # Top Header
 st.title("🌽 AgriScan Live Dashboard")
-st.markdown("Real-time Quality Control Analytics")
+st.markdown("<p class='small-muted'>Real-time quality control analytics for corn seed batches.</p>", unsafe_allow_html=True)
 st.markdown("---")
 
 # Row 1: The Metrics (KPIs)
@@ -154,13 +193,10 @@ with main_col_1:
                 # Determine Grade
                 if "healthy" in raw_label:
                     grade = "High"
-                    color = "green"
                 elif "discolored" in raw_label or "silkcut" in raw_label:
                     grade = "Medium"
-                    color = "orange"
                 else:
                     grade = "Low"
-                    color = "red"
 
                 # Update Stats (Session State)
                 st.session_state['counts'][grade] += 1
@@ -176,14 +212,12 @@ with main_col_1:
 with main_col_2:
     st.subheader("📊 Batch Analytics")
     
-    # 1. Create Dataframe from Counts
     chart_data = pd.DataFrame([
         {"Quality": "High", "Count": st.session_state['counts']['High'], "Color": "#2ecc71"},
         {"Quality": "Medium", "Count": st.session_state['counts']['Medium'], "Color": "#f1c40f"},
         {"Quality": "Low", "Count": st.session_state['counts']['Low'], "Color": "#e74c3c"}
     ])
 
-    # 2. Altair Bar Chart
     if total_scans > 0:
         c = alt.Chart(chart_data).mark_bar().encode(
             x='Quality',
@@ -194,11 +228,9 @@ with main_col_2:
         
         st.altair_chart(c, use_container_width=True)
         
-        # 3. Recent History Table
         st.write("**Recent Scans Log:**")
         if len(st.session_state['history']) > 0:
-            # Show last 5 entries
             df_hist = pd.DataFrame(st.session_state['history'])
-            st.dataframe(df_hist.tail(5), use_container_width=True)
+            st.dataframe(df_hist.tail(5), use_column_width=True)
     else:
         st.info("Waiting for data... Scan a seed to see analytics.")
