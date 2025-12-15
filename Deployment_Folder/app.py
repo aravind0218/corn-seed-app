@@ -31,93 +31,120 @@ with st.sidebar:
     st.session_state['dark_mode'] = dark_mode
     st.markdown("---")
 
+# --- UPDATED LIGHT MODE CSS (High Visibility & Contrast) ---
 LIGHT_MODE_CSS = """
 <style>
+    /* Main Background - Fresh Mint Gradient */
     .stApp {
-        background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 50%, #e0f2f1 100%);
-        color: #1a1a2e;
+        background: linear-gradient(135deg, #f0fdf4 0%, #e6f7ed 50%, #d1fae5 100%);
+        color: #022c22;
     }
-    html, body, [class*="css"] {
-        color: #1a1a2e !important;
+    
+    /* GLOBAL TEXT OVERRIDES - Force Dark Colors */
+    html, body, [class*="css"], .stMarkdown, p, h1, h2, h3, h4, h5, h6, label, span, div {
+        color: #022c22 !important; /* Very Dark Green/Black */
         font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
+
+    /* Metric Cards - Clean White Pop */
     div[data-testid="stMetric"] {
         background-color: #ffffff;
         padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        border: 1px solid #c8e6c9;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Softer shadow */
+        border: 1px solid #d1fae5;
     }
     div[data-testid="stMetric"] label {
-        color: #374151 !important;
+        color: #64748b !important; /* Slate Grey for label */
         font-weight: 600 !important;
     }
     div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
-        color: #1f2937 !important;
-        font-weight: 700 !important;
+        color: #15803d !important; /* Green Value */
+        font-weight: 800 !important;
     }
+
+    /* Sidebar - White with Distinct Border */
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
-        border-right: 2px solid #86efac;
+        background-color: #ffffff;
+        border-right: 2px solid #bbf7d0;
     }
+    /* Force Sidebar Text to be Dark */
     section[data-testid="stSidebar"] * {
-        color: #1a1a2e !important;
+        color: #0f172a !important; /* Dark Navy */
     }
-    h1, h2, h3 {
-        font-family: "Playfair Display", "Georgia", serif;
-        color: #1a1a2e !important;
-        font-weight: 700;
-    }
-    .small-muted {
-        color: #4b5563 !important;
-        font-size: 1rem;
+    section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] span {
         font-weight: 500;
     }
+
+    /* Headers - Elegant Serif */
+    h1, h2, h3 {
+        font-family: "Playfair Display", "Georgia", serif;
+        color: #14532d !important; /* Deep Forest Green */
+        font-weight: 800;
+        text-shadow: none;
+    }
+    
+    /* Subtext */
+    .small-muted {
+        color: #475569 !important; /* Slate Grey */
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    /* Radio Buttons & Labels */
     div[data-testid="stRadio"] label {
-        color: #1f2937 !important;
-        font-weight: 500 !important;
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        background-color: transparent;
     }
-    div[data-testid="stRadio"] label span {
-        color: #1f2937 !important;
-    }
+
+    /* Primary Button - Vibrant Green */
     div.stButton > button {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
+        background: linear-gradient(135deg, #16a34a, #15803d);
         color: #ffffff !important;
-        border-radius: 8px;
+        border-radius: 10px;
         border: none;
         padding: 0.75rem 1.5rem;
-        font-weight: 600;
-        box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
-        transition: all 0.3s ease;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);
+        transition: all 0.2s ease;
     }
     div.stButton > button:hover {
-        background: linear-gradient(135deg, #16a34a, #15803d);
+        background: linear-gradient(135deg, #15803d, #14532d);
         transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(22, 163, 74, 0.4);
     }
+
+    /* File Uploader - High Contrast */
     div[data-testid="stFileUploader"] {
         border-radius: 12px;
-        background-color: #ffffff;
-        border: 2px dashed #86efac;
+        background-color: #ffffff; /* Explicit White */
+        border: 2px dashed #16a34a; /* Green Dash */
+        padding: 20px;
+    }
+    div[data-testid="stFileUploader"] section {
+        background-color: #ffffff !important;
     }
     div[data-testid="stFileUploader"] button {
-        font-weight: 600 !important;
-        color: #1f2937 !important;
-        background-color: #f0fdf4 !important;
-        border: 1px solid #86efac !important;
+        background-color: #dcfce7 !important; /* Light Green Button */
+        color: #14532d !important; /* Dark Green Text */
+        border: 1px solid #16a34a !important;
+        font-weight: 700 !important;
     }
-    .stDataFrame, .stDataFrame th, .stDataFrame td {
-        color: #1f2937 !important;
+    div[data-testid="stFileUploader"] span {
+        color: #334155 !important; /* Dark Grey Instructions */
+    }
+
+    /* Data Tables & Charts */
+    .stDataFrame {
         background-color: #ffffff;
-    }
-    .stMarkdown, .stMarkdown p {
-        color: #374151 !important;
-    }
-    div[data-testid="stToggle"] label span {
-        color: #1f2937 !important;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 </style>
 """
 
+# --- DARK MODE CSS (KEPT EXACTLY AS YOU LIKED IT) ---
 DARK_MODE_CSS = """
 <style>
     .stApp {
@@ -219,6 +246,7 @@ DARK_MODE_CSS = """
 </style>
 """
 
+# Apply CSS based on state
 if st.session_state['dark_mode']:
     st.markdown(DARK_MODE_CSS, unsafe_allow_html=True)
 else:
