@@ -20,134 +20,209 @@ if 'history' not in st.session_state:
     st.session_state['history'] = []
 if 'counts' not in st.session_state:
     st.session_state['counts'] = {'High': 0, 'Medium': 0, 'Low': 0}
+if 'dark_mode' not in st.session_state:
+    st.session_state['dark_mode'] = False
 
-# --- 3. CUSTOM DASHBOARD STYLING (UI ONLY) ---
-st.markdown("""
+# --- 3. THEME TOGGLE & STYLING ---
+
+with st.sidebar:
+    st.markdown("### ⚙️ Settings")
+    dark_mode = st.toggle("🌙 Dark Mode", value=st.session_state['dark_mode'], key="theme_toggle")
+    st.session_state['dark_mode'] = dark_mode
+    st.markdown("---")
+
+LIGHT_MODE_CSS = """
 <style>
-    /* Dashboard Background – Fresh green gradient for an agricultural feel */
     .stApp {
-        background: linear-gradient(135deg, #f0f9f0 0%, #e8f5e8 100%);
-        color: #2d3748; /* Darker text for better contrast */
+        background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 50%, #e0f2f1 100%);
+        color: #1a1a2e;
     }
-
-    /* Make all default text dark and readable */
     html, body, [class*="css"] {
-        color: #2d3748;
+        color: #1a1a2e !important;
         font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-
-    /* Metrics Cards – Enhanced with subtle shadows and borders */
     div[data-testid="stMetric"] {
         background-color: #ffffff;
         padding: 20px;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        border: 1px solid #e2e8f0;
-        margin-bottom: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border: 1px solid #c8e6c9;
     }
-
-    /* Sidebar styling – Light green tint */
+    div[data-testid="stMetric"] label {
+        color: #374151 !important;
+        font-weight: 600 !important;
+    }
+    div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+        color: #1f2937 !important;
+        font-weight: 700 !important;
+    }
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #f7fafc 0%, #edf2f7 100%);
-        border-right: 2px solid #c6f6d5;
+        background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+        border-right: 2px solid #86efac;
     }
     section[data-testid="stSidebar"] * {
-        color: #2d3748 !important;
+        color: #1a1a2e !important;
     }
-
-    /* Headers – Stylish with green accents */
     h1, h2, h3 {
-        font-family: "Playfair Display", "Helvetica", serif;
-        color: #2d3748;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        font-family: "Playfair Display", "Georgia", serif;
+        color: #1a1a2e !important;
+        font-weight: 700;
     }
-
-    /* Subheader text – Muted but visible */
     .small-muted {
-        color: #718096;
+        color: #4b5563 !important;
         font-size: 1rem;
         font-weight: 500;
     }
-
-    /* Buttons – Vibrant green with hover effects */
+    div[data-testid="stRadio"] label {
+        color: #1f2937 !important;
+        font-weight: 500 !important;
+    }
+    div[data-testid="stRadio"] label span {
+        color: #1f2937 !important;
+    }
     div.stButton > button {
-        background: linear-gradient(135deg, #38a169, #2f855a);
-        color: #ffffff;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #ffffff !important;
         border-radius: 8px;
         border: none;
         padding: 0.75rem 1.5rem;
         font-weight: 600;
-        box-shadow: 0 4px 14px rgba(56, 161, 105, 0.4);
+        box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
         transition: all 0.3s ease;
     }
     div.stButton > button:hover {
-        background: linear-gradient(135deg, #2f855a, #38a169);
+        background: linear-gradient(135deg, #16a34a, #15803d);
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(56, 161, 105, 0.6);
     }
-
-    /* File uploader card – Clean and bordered */
     div[data-testid="stFileUploader"] {
         border-radius: 12px;
         background-color: #ffffff;
-        border: 2px dashed #a0aec0;
-        padding: 20px;
+        border: 2px dashed #86efac;
     }
-
-    /* Make 'Browse files' text bold and dark */
     div[data-testid="stFileUploader"] button {
-        font-weight: 700 !important;
-        color: #2d3748 !important;
-        background-color: #edf2f7 !important;
-        border: 1px solid #cbd5e0 !important;
+        font-weight: 600 !important;
+        color: #1f2937 !important;
+        background-color: #f0fdf4 !important;
+        border: 1px solid #86efac !important;
     }
-
-    /* Dataframe styling – Dark text for visibility */
-    .blank.dataframe, .stDataFrame {
-        color: #2d3748;
+    .stDataFrame, .stDataFrame th, .stDataFrame td {
+        color: #1f2937 !important;
         background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-
-    /* Radio buttons and other inputs – Styled for consistency */
-    div[data-testid="stRadio"] label {
-        color: #2d3748;
-        font-weight: 500;
+    .stMarkdown, .stMarkdown p {
+        color: #374151 !important;
     }
-
-    /* Success and error messages – Enhanced colors */
-    .stSuccess {
-        background-color: #c6f6d5;
-        color: #22543d;
-        border: 1px solid #9ae6b4;
-        border-radius: 8px;
-        padding: 10px;
-    }
-    .stError {
-        background-color: #fed7d7;
-        color: #742a2a;
-        border: 1px solid #feb2b2;
-        border-radius: 8px;
-        padding: 10px;
-    }
-    .stInfo {
-        background-color: #bee3f8;
-        color: #2a4365;
-        border: 1px solid #90cdf4;
-        border-radius: 8px;
-        padding: 10px;
-    }
-
-    /* Chart container – Subtle background */
-    .altair-chart {
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        padding: 10px;
+    div[data-testid="stToggle"] label span {
+        color: #1f2937 !important;
     }
 </style>
-""", unsafe_allow_html=True)
+"""
+
+DARK_MODE_CSS = """
+<style>
+    .stApp {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        color: #e2e8f0;
+    }
+    html, body, [class*="css"] {
+        color: #e2e8f0 !important;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    div[data-testid="stMetric"] {
+        background: rgba(30, 41, 59, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(34, 197, 94, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    div[data-testid="stMetric"] label {
+        color: #94a3b8 !important;
+        font-weight: 600 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem !important;
+    }
+    div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+        color: #22c55e !important;
+        font-weight: 700 !important;
+        text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+    }
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+        border-right: 2px solid rgba(34, 197, 94, 0.4);
+    }
+    section[data-testid="stSidebar"] * {
+        color: #e2e8f0 !important;
+    }
+    h1, h2, h3 {
+        font-family: "Playfair Display", "Georgia", serif;
+        color: #f1f5f9 !important;
+        font-weight: 700;
+        text-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+    }
+    .small-muted {
+        color: #94a3b8 !important;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    div[data-testid="stRadio"] label {
+        color: #e2e8f0 !important;
+        font-weight: 500 !important;
+    }
+    div[data-testid="stRadio"] label span {
+        color: #e2e8f0 !important;
+    }
+    div.stButton > button {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #ffffff !important;
+        border-radius: 8px;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        box-shadow: 0 4px 20px rgba(34, 197, 94, 0.5), 0 0 30px rgba(34, 197, 94, 0.2);
+        transition: all 0.3s ease;
+    }
+    div.stButton > button:hover {
+        background: linear-gradient(135deg, #16a34a, #15803d);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.3);
+    }
+    div[data-testid="stFileUploader"] {
+        border-radius: 12px;
+        background: rgba(30, 41, 59, 0.6);
+        border: 2px dashed rgba(34, 197, 94, 0.5);
+    }
+    div[data-testid="stFileUploader"] button {
+        color: #e2e8f0 !important;
+        background-color: rgba(34, 197, 94, 0.2) !important;
+        border: 1px solid rgba(34, 197, 94, 0.4) !important;
+    }
+    div[data-testid="stFileUploader"] label {
+        color: #94a3b8 !important;
+    }
+    .stDataFrame {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-radius: 8px;
+    }
+    .stDataFrame th {
+        color: #22c55e !important;
+        background-color: rgba(15, 23, 42, 0.8) !important;
+    }
+    .stDataFrame td {
+        color: #e2e8f0 !important;
+        background-color: rgba(30, 41, 59, 0.6) !important;
+    }
+    .stMarkdown, .stMarkdown p {
+        color: #cbd5e1 !important;
+    }
+</style>
+"""
+
+if st.session_state['dark_mode']:
+    st.markdown(DARK_MODE_CSS, unsafe_allow_html=True)
+else:
+    st.markdown(LIGHT_MODE_CSS, unsafe_allow_html=True)
 
 # --- 4. BACKEND LOGIC (UNCHANGED) ---
 @st.cache_resource
@@ -183,12 +258,10 @@ def process_and_predict(image_data, model):
 
 # --- 5. DASHBOARD UI LAYOUT ---
 
-# Top Header
 st.title("🌽 AgriScan Live Dashboard")
 st.markdown("<p class='small-muted'>Real-time quality control analytics for corn seed batches.</p>", unsafe_allow_html=True)
 st.markdown("---")
 
-# Row 1: The Metrics (KPIs)
 col1, col2, col3, col4 = st.columns(4)
 total_scans = sum(st.session_state['counts'].values())
 
@@ -203,21 +276,16 @@ with col4:
 
 st.markdown("---")
 
-# Row 2: Main Interface (Scanner + Charts)
 main_col_1, main_col_2 = st.columns([1, 2])
 
 with main_col_1:
     st.subheader("🔍 Seed Scanner")
-    
-    # Check Model
     if model is None:
         st.error("🚨 Model not found. Please upload 'corn_model.h5'.")
         st.stop()
 
-    # Input
     mode = st.radio("Input Mode", ["Upload", "Camera"], horizontal=True)
     file_input = None
-    
     if mode == "Upload":
         file_input = st.file_uploader("Upload Image", type=["jpg", "png"], label_visibility="collapsed")
     else:
@@ -238,7 +306,6 @@ with main_col_1:
                 else:
                     raw_label = str(result_idx)
 
-                # Determine Grade
                 if "healthy" in raw_label:
                     grade = "High"
                 elif "discolored" in raw_label or "silkcut" in raw_label:
@@ -246,7 +313,6 @@ with main_col_1:
                 else:
                     grade = "Low"
 
-                # Update Stats (Session State)
                 st.session_state['counts'][grade] += 1
                 st.session_state['history'].append({
                     "Grade": grade,
@@ -254,7 +320,6 @@ with main_col_1:
                     "Time": pd.Timestamp.now().strftime("%H:%M:%S")
                 })
                 
-                # Show Result
                 st.success(f"**Result: {grade} Quality** ({confidence:.1f}%)")
 
 with main_col_2:
