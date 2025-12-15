@@ -31,7 +31,7 @@ with st.sidebar:
     st.session_state['dark_mode'] = dark_mode
     st.markdown("---")
 
-# --- UPDATED LIGHT MODE CSS (High Visibility & Contrast) ---
+# --- UPDATED LIGHT MODE CSS (Yellow Sidebar + High Visibility) ---
 LIGHT_MODE_CSS = """
 <style>
     /* Main Background - Fresh Mint Gradient */
@@ -51,7 +51,7 @@ LIGHT_MODE_CSS = """
         background-color: #ffffff;
         padding: 20px;
         border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Softer shadow */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         border: 1px solid #d1fae5;
     }
     div[data-testid="stMetric"] label {
@@ -63,17 +63,22 @@ LIGHT_MODE_CSS = """
         font-weight: 800 !important;
     }
 
-    /* Sidebar - White with Distinct Border */
+    /* --- SIDEBAR: CORN SILK YELLOW THEME --- */
     section[data-testid="stSidebar"] {
-        background-color: #ffffff;
-        border-right: 2px solid #bbf7d0;
+        /* Soft Yellow Gradient */
+        background: linear-gradient(180deg, #fefce8 0%, #fef9c3 100%); 
+        border-right: 2px solid #eab308; /* Golden Border to match */
     }
-    /* Force Sidebar Text to be Dark */
+    
+    /* Force Sidebar Text to be Dark Navy for Contrast */
     section[data-testid="stSidebar"] * {
-        color: #0f172a !important; /* Dark Navy */
+        color: #0f172a !important; 
     }
     section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] span {
-        font-weight: 500;
+        font-weight: 600;
+    }
+    section[data-testid="stSidebar"] h3 {
+        color: #854d0e !important; /* Dark Gold Header */
     }
 
     /* Headers - Elegant Serif */
@@ -91,11 +96,10 @@ LIGHT_MODE_CSS = """
         font-weight: 500;
     }
 
-    /* Radio Buttons & Labels */
+    /* Radio Buttons */
     div[data-testid="stRadio"] label {
         color: #0f172a !important;
         font-weight: 600 !important;
-        background-color: transparent;
     }
 
     /* Primary Button - Vibrant Green */
@@ -118,24 +122,24 @@ LIGHT_MODE_CSS = """
     /* File Uploader - High Contrast */
     div[data-testid="stFileUploader"] {
         border-radius: 12px;
-        background-color: #ffffff; /* Explicit White */
-        border: 2px dashed #16a34a; /* Green Dash */
+        background-color: #ffffff; 
+        border: 2px dashed #16a34a; 
         padding: 20px;
     }
     div[data-testid="stFileUploader"] section {
         background-color: #ffffff !important;
     }
     div[data-testid="stFileUploader"] button {
-        background-color: #dcfce7 !important; /* Light Green Button */
-        color: #14532d !important; /* Dark Green Text */
+        background-color: #dcfce7 !important; 
+        color: #14532d !important;
         border: 1px solid #16a34a !important;
         font-weight: 700 !important;
     }
     div[data-testid="stFileUploader"] span {
-        color: #334155 !important; /* Dark Grey Instructions */
+        color: #334155 !important;
     }
 
-    /* Data Tables & Charts */
+    /* Data Tables */
     .stDataFrame {
         background-color: #ffffff;
         border-radius: 10px;
@@ -144,7 +148,7 @@ LIGHT_MODE_CSS = """
 </style>
 """
 
-# --- DARK MODE CSS (KEPT EXACTLY AS YOU LIKED IT) ---
+# --- DARK MODE CSS (UNCHANGED) ---
 DARK_MODE_CSS = """
 <style>
     .stApp {
