@@ -24,79 +24,127 @@ if 'counts' not in st.session_state:
 # --- 3. CUSTOM DASHBOARD STYLING (UI ONLY) ---
 st.markdown("""
 <style>
-    /* Dashboard Background – slightly darker gray-blue */
+    /* Dashboard Background – Fresh green gradient for an agricultural feel */
     .stApp {
-        background-color: #e5e9f0;
-        color: #111827; /* dark text for contrast */
+        background: linear-gradient(135deg, #f0f9f0 0%, #e8f5e8 100%);
+        color: #2d3748; /* Darker text for better contrast */
     }
 
-    /* Make all default text dark */
+    /* Make all default text dark and readable */
     html, body, [class*="css"] {
-        color: #111827;
+        color: #2d3748;
         font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    /* Metrics Cards */
+    /* Metrics Cards – Enhanced with subtle shadows and borders */
     div[data-testid="stMetric"] {
         background-color: #ffffff;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 3px 8px rgba(15,23,42,0.06);
-        border: 1px solid #d1d5db;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 10px;
     }
 
-    /* Sidebar styling */
+    /* Sidebar styling – Light green tint */
     section[data-testid="stSidebar"] {
-        background: #f9fafb;
-        border-right: 1px solid #d1d5db;
+        background: linear-gradient(180deg, #f7fafc 0%, #edf2f7 100%);
+        border-right: 2px solid #c6f6d5;
     }
     section[data-testid="stSidebar"] * {
-        color: #111827 !important;
+        color: #2d3748 !important;
     }
 
-    /* Headers */
+    /* Headers – Stylish with green accents */
     h1, h2, h3 {
         font-family: "Playfair Display", "Helvetica", serif;
-        color: #111827;
+        color: #2d3748;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
 
-    /* Subheader text */
+    /* Subheader text – Muted but visible */
     .small-muted {
-        color: #4b5563;
-        font-size: 0.95rem;
+        color: #718096;
+        font-size: 1rem;
+        font-weight: 500;
     }
 
-    /* Buttons */
+    /* Buttons – Vibrant green with hover effects */
     div.stButton > button {
-        background: linear-gradient(135deg, #2E7D32, #1b5e20);
+        background: linear-gradient(135deg, #38a169, #2f855a);
         color: #ffffff;
-        border-radius: 6px;
+        border-radius: 8px;
         border: none;
-        padding: 0.5rem 1rem;
+        padding: 0.75rem 1.5rem;
         font-weight: 600;
-        box-shadow: 0 4px 10px rgba(34,139,34,0.35);
+        box-shadow: 0 4px 14px rgba(56, 161, 105, 0.4);
+        transition: all 0.3s ease;
     }
     div.stButton > button:hover {
-        background: linear-gradient(135deg, #1b5e20, #2E7D32);
-        transform: translateY(-1px);
+        background: linear-gradient(135deg, #2f855a, #38a169);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(56, 161, 105, 0.6);
     }
 
-    /* File uploader card */
+    /* File uploader card – Clean and bordered */
     div[data-testid="stFileUploader"] {
-        border-radius: 10px;
-        background-color: #f3f4f6;
-        border: 1px dashed #d1d5db;
+        border-radius: 12px;
+        background-color: #ffffff;
+        border: 2px dashed #a0aec0;
+        padding: 20px;
     }
 
-    /* Make 'Browse files' text bold & white */
+    /* Make 'Browse files' text bold and dark */
     div[data-testid="stFileUploader"] button {
         font-weight: 700 !important;
-        color: #ffffff !important;
+        color: #2d3748 !important;
+        background-color: #edf2f7 !important;
+        border: 1px solid #cbd5e0 !important;
     }
 
-    /* Dataframe header text darker */
+    /* Dataframe styling – Dark text for visibility */
     .blank.dataframe, .stDataFrame {
-        color: #111827;
+        color: #2d3748;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    /* Radio buttons and other inputs – Styled for consistency */
+    div[data-testid="stRadio"] label {
+        color: #2d3748;
+        font-weight: 500;
+    }
+
+    /* Success and error messages – Enhanced colors */
+    .stSuccess {
+        background-color: #c6f6d5;
+        color: #22543d;
+        border: 1px solid #9ae6b4;
+        border-radius: 8px;
+        padding: 10px;
+    }
+    .stError {
+        background-color: #fed7d7;
+        color: #742a2a;
+        border: 1px solid #feb2b2;
+        border-radius: 8px;
+        padding: 10px;
+    }
+    .stInfo {
+        background-color: #bee3f8;
+        color: #2a4365;
+        border: 1px solid #90cdf4;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    /* Chart container – Subtle background */
+    .altair-chart {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 10px;
     }
 </style>
 """, unsafe_allow_html=True)
