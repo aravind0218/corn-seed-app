@@ -31,7 +31,7 @@ with st.sidebar:
     st.session_state['dark_mode'] = dark_mode
     st.markdown("---")
 
-# --- UPDATED LIGHT MODE CSS (Yellow Sidebar + High Visibility) ---
+# --- UPDATED LIGHT MODE CSS (Yellow Sidebar + Light Green Toggle) ---
 LIGHT_MODE_CSS = """
 <style>
     /* Main Background - Fresh Mint Gradient */
@@ -40,13 +40,31 @@ LIGHT_MODE_CSS = """
         color: #022c22;
     }
     
-    /* GLOBAL TEXT OVERRIDES - Force Dark Colors */
+    /* GLOBAL TEXT OVERRIDES */
     html, body, [class*="css"], .stMarkdown, p, h1, h2, h3, h4, h5, h6, label, span, div {
         color: #022c22 !important; /* Very Dark Green/Black */
         font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    /* Metric Cards - Clean White Pop */
+    /* --- TOGGLE BUTTON: LIGHT GREEN CUSTOMIZATION --- */
+    div[data-testid="stToggle"] div[role="switch"] {
+        border: 2px solid #4ade80 !important; /* Light Green Border */
+    }
+    /* When Active (Dark Mode ON) */
+    div[data-testid="stToggle"] div[role="switch"][aria-checked="true"] {
+        background-color: #4ade80 !important; /* Light Green Fill */
+    }
+    /* When Inactive (Light Mode) */
+    div[data-testid="stToggle"] div[role="switch"][aria-checked="false"] {
+        background-color: #dcfce7 !important; /* Very Pale Green */
+    }
+    /* The sliding circle inside */
+    div[data-testid="stToggle"] div[role="switch"] span {
+        background-color: #ffffff !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    /* Metric Cards */
     div[data-testid="stMetric"] {
         background-color: #ffffff;
         padding: 20px;
@@ -55,43 +73,38 @@ LIGHT_MODE_CSS = """
         border: 1px solid #d1fae5;
     }
     div[data-testid="stMetric"] label {
-        color: #64748b !important; /* Slate Grey for label */
+        color: #64748b !important;
         font-weight: 600 !important;
     }
     div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
-        color: #15803d !important; /* Green Value */
+        color: #15803d !important;
         font-weight: 800 !important;
     }
 
     /* --- SIDEBAR: CORN SILK YELLOW THEME --- */
     section[data-testid="stSidebar"] {
-        /* Soft Yellow Gradient */
         background: linear-gradient(180deg, #fefce8 0%, #fef9c3 100%); 
-        border-right: 2px solid #eab308; /* Golden Border to match */
+        border-right: 2px solid #eab308;
     }
     
-    /* Force Sidebar Text to be Dark Navy for Contrast */
     section[data-testid="stSidebar"] * {
         color: #0f172a !important; 
     }
-    section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] span {
-        font-weight: 600;
-    }
     section[data-testid="stSidebar"] h3 {
-        color: #854d0e !important; /* Dark Gold Header */
+        color: #854d0e !important;
     }
 
-    /* Headers - Elegant Serif */
+    /* Headers */
     h1, h2, h3 {
         font-family: "Playfair Display", "Georgia", serif;
-        color: #14532d !important; /* Deep Forest Green */
+        color: #14532d !important;
         font-weight: 800;
         text-shadow: none;
     }
     
     /* Subtext */
     .small-muted {
-        color: #475569 !important; /* Slate Grey */
+        color: #475569 !important;
         font-size: 1.1rem;
         font-weight: 500;
     }
@@ -102,7 +115,7 @@ LIGHT_MODE_CSS = """
         font-weight: 600 !important;
     }
 
-    /* Primary Button - Vibrant Green */
+    /* Primary Button */
     div.stButton > button {
         background: linear-gradient(135deg, #16a34a, #15803d);
         color: #ffffff !important;
@@ -116,10 +129,9 @@ LIGHT_MODE_CSS = """
     div.stButton > button:hover {
         background: linear-gradient(135deg, #15803d, #14532d);
         transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(22, 163, 74, 0.4);
     }
 
-    /* File Uploader - High Contrast */
+    /* File Uploader */
     div[data-testid="stFileUploader"] {
         border-radius: 12px;
         background-color: #ffffff; 
@@ -134,9 +146,6 @@ LIGHT_MODE_CSS = """
         color: #14532d !important;
         border: 1px solid #16a34a !important;
         font-weight: 700 !important;
-    }
-    div[data-testid="stFileUploader"] span {
-        color: #334155 !important;
     }
 
     /* Data Tables */
@@ -159,6 +168,15 @@ DARK_MODE_CSS = """
         color: #e2e8f0 !important;
         font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
+    
+    /* Custom Toggle Switch for Dark Mode too */
+    div[data-testid="stToggle"] div[role="switch"] {
+        border: 2px solid #4ade80 !important;
+    }
+    div[data-testid="stToggle"] div[role="switch"][aria-checked="true"] {
+        background-color: #4ade80 !important;
+    }
+
     div[data-testid="stMetric"] {
         background: rgba(30, 41, 59, 0.8);
         backdrop-filter: blur(10px);
