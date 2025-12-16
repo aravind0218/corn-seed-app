@@ -20,13 +20,16 @@ if 'history' not in st.session_state:
     st.session_state['history'] = []
 if 'counts' not in st.session_state:
     st.session_state['counts'] = {'High': 0, 'Medium': 0, 'Low': 0}
+
+# --- CHANGE HERE: Set Default to True ---
 if 'dark_mode' not in st.session_state:
-    st.session_state['dark_mode'] = False
+    st.session_state['dark_mode'] = True 
 
 # --- 3. THEME TOGGLE & STYLING ---
 
 with st.sidebar:
     st.markdown("### ⚙️ Settings")
+    # The toggle will now start in the "On" position because the state is True
     dark_mode = st.toggle("🌙 Dark Mode", value=st.session_state['dark_mode'], key="theme_toggle")
     st.session_state['dark_mode'] = dark_mode
     st.markdown("---")
