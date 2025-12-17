@@ -15,13 +15,13 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- 2. SESSION STATE INITIALIZATION ---
+# --- 2. SESSION STATE ---
 if 'history' not in st.session_state:
     st.session_state['history'] = []
 if 'counts' not in st.session_state:
     st.session_state['counts'] = {'High': 0, 'Medium': 0, 'Low': 0}
 
-# Default to Dark Mode
+# --- CHANGE HERE: Set Default to True ---
 if 'dark_mode' not in st.session_state:
     st.session_state['dark_mode'] = True 
 
@@ -29,11 +29,12 @@ if 'dark_mode' not in st.session_state:
 
 with st.sidebar:
     st.markdown("### ⚙️ Settings")
+    # The toggle will now start in the "On" position because the state is True
     dark_mode = st.toggle("🌙 Dark Mode", value=st.session_state['dark_mode'], key="theme_toggle")
     st.session_state['dark_mode'] = dark_mode
     st.markdown("---")
 
-# --- LIGHT MODE CSS ---
+# --- UPDATED LIGHT MODE CSS (Yellow Sidebar + Light Green Toggle) ---
 LIGHT_MODE_CSS = """
 <style>
     /* Main Background - Fresh Mint Gradient */
@@ -159,7 +160,7 @@ LIGHT_MODE_CSS = """
 </style>
 """
 
-# --- DARK MODE CSS ---
+# --- DARK MODE CSS (UNCHANGED) ---
 DARK_MODE_CSS = """
 <style>
     .stApp {
@@ -270,12 +271,13 @@ DARK_MODE_CSS = """
 </style>
 """
 
+# Apply CSS based on state
 if st.session_state['dark_mode']:
     st.markdown(DARK_MODE_CSS, unsafe_allow_html=True)
 else:
     st.markdown(LIGHT_MODE_CSS, unsafe_allow_html=True)
 
-# --- 4. BACKEND LOGIC: ASSET LOADING ---
+# --- 4. BACKEND LOGIC (UNCHANGED) ---
 @st.cache_resource
 def load_assets():
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -284,14 +286,16 @@ def load_assets():
 
     try:
         model = tf.keras.models.load_model(model_path)
-    except Exception as e:
+    except:
         return None, None
+        
     try:
         with open(json_path, 'r') as f:
             class_indices = json.load(f)
         label_map = {v: k for k, v in class_indices.items()}
-    except Exception as e:
+    except:
         label_map = None
+        
     return model, label_map
 
 model, label_map = load_assets()
@@ -330,7 +334,7 @@ main_col_1, main_col_2 = st.columns([1, 2])
 with main_col_1:
     st.subheader("🔍 Seed Scanner")
     if model is None:
-        st.error("🚨 Model not found. Please upload 'corn_model.h5' and 'classes.json'.")
+        st.error("🚨 Model not found. Please upload 'corn_model.h5'.")
         st.stop()
 
     mode = st.radio("Input Mode", ["Upload", "Camera"], horizontal=True)
@@ -342,7 +346,7 @@ with main_col_1:
 
     if file_input:
         image = Image.open(file_input)
-        st.image(image, caption="Current Specimen", use_container_width=True)
+        st.image(image, caption="Current Specimen", use_column_width=True)
         
         if st.button("Run Analysis", use_container_width=True):
             with st.spinner("Analyzing..."):
@@ -350,33 +354,26 @@ with main_col_1:
                 result_idx = np.argmax(preds)
                 confidence = np.max(preds) * 100
                 
-                # --- NEW LOGIC: DETECT INCORRECT IMAGE ---
-                # If confidence is below 70%, assume it's not a seed
-                if confidence < 70.0:
-                    st.error("🚨 Incorrect photo detected! Please upload a clear seed photo.")
+                if label_map:
+                    raw_label = label_map[result_idx].lower()
                 else:
-                    # Proceed with classification if valid
-                    if label_map:
-                        raw_label = label_map[result_idx].lower()
-                    else:
-                        raw_label = str(result_idx)
+                    raw_label = str(result_idx)
 
-                    if "healthy" in raw_label:
-                        grade = "High"
-                    elif "discolored" in raw_label or "silkcut" in raw_label:
-                        grade = "Medium"
-                    else:
-                        grade = "Low"
+                if "healthy" in raw_label:
+                    grade = "High"
+                elif "discolored" in raw_label or "silkcut" in raw_label:
+                    grade = "Medium"
+                else:
+                    grade = "Low"
 
-                    # Update session state history and counts
-                    st.session_state['counts'][grade] += 1
-                    st.session_state['history'].append({
-                        "Grade": grade,
-                        "Confidence": f"{confidence:.1f}%",
-                        "Time": pd.Timestamp.now().strftime("%H:%M:%S")
-                    })
-                    
-                    st.success(f"**Result: {grade} Quality** ({confidence:.1f}%)")
+                st.session_state['counts'][grade] += 1
+                st.session_state['history'].append({
+                    "Grade": grade,
+                    "Confidence": f"{confidence:.1f}%",
+                    "Time": pd.Timestamp.now().strftime("%H:%M:%S")
+                })
+                
+                st.success(f"**Result: {grade} Quality** ({confidence:.1f}%)")
 
 with main_col_2:
     st.subheader("📊 Batch Analytics")
@@ -400,6 +397,6 @@ with main_col_2:
         st.write("**Recent Scans Log:**")
         if len(st.session_state['history']) > 0:
             df_hist = pd.DataFrame(st.session_state['history'])
-            st.dataframe(df_hist.tail(5), use_container_width=True)
+            st.dataframe(df_hist.tail(5), use_column_width=True)
     else:
         st.info("Waiting for data... Scan a seed to see analytics.")
