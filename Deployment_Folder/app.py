@@ -150,13 +150,13 @@ def load_assets():
 
     try:
         model = tf.keras.models.load_model(model_path)
-    except Exception as e:
+    except Exception:
         return None, None
     try:
         with open(json_path, 'r') as f:
             class_indices = json.load(f)
         label_map = {v: k for k, v in class_indices.items()}
-    except Exception as e:
+    except Exception:
         label_map = None
     return model, label_map
 
@@ -240,6 +240,7 @@ with main_col_1:
                         "Time": pd.Timestamp.now().strftime("%H:%M:%S")
                     })
                     
+                    # FIXED LINE 196
                     st.success(f"**Result: {grade} Quality** ({confidence:.1f}%)")
 
 with main_col_2:
@@ -264,7 +265,6 @@ with main_col_2:
         st.write("**Recent Scans Log:**")
         if len(st.session_state['history']) > 0:
             df_hist = pd.DataFrame(st.session_state['history'])
-            # Fixed the parameter name to use_container_width
             st.dataframe(df_hist.tail(5), use_container_width=True)
     else:
         st.info("Waiting for data... Scan a seed to see analytics.")
