@@ -277,7 +277,7 @@ else:
 # --- 4. BACKEND LOGIC (UNCHANGED) ---
 @st.cache_resource
 def load_assets():
-    base_dir = os.path.dirname(os.path.abspath(_file_))
+    base_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(base_dir, 'corn_model.h5')
     json_path = os.path.join(base_dir, 'classes.json')
 
@@ -370,7 +370,7 @@ with main_col_1:
                     "Time": pd.Timestamp.now().strftime("%H:%M:%S")
                 })
                 
-                st.success(f"*Result: {grade} Quality* ({confidence:.1f}%)")
+                st.success(f"**Result: {grade} Quality** ({confidence:.1f}%)")
 
 with main_col_2:
     st.subheader("📊 Batch Analytics")
@@ -391,7 +391,7 @@ with main_col_2:
         
         st.altair_chart(c, use_container_width=True)
         
-        st.write("*Recent Scans Log:*")
+        st.write("**Recent Scans Log:**")
         if len(st.session_state['history']) > 0:
             df_hist = pd.DataFrame(st.session_state['history'])
             st.dataframe(df_hist.tail(5), use_column_width=True)
