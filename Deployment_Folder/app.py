@@ -15,13 +15,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- 2. SESSION STATE ---
+# --- 2. SESSION STATE INITIALIZATION ---
+# Initialize session state for history log
 if 'history' not in st.session_state:
     st.session_state['history'] = []
+
+# Initialize session state for counting grades
 if 'counts' not in st.session_state:
     st.session_state['counts'] = {'High': 0, 'Medium': 0, 'Low': 0}
 
-# --- CHANGE HERE: Set Default to True ---
+# Default to Dark Mode (Set to True)
 if 'dark_mode' not in st.session_state:
     st.session_state['dark_mode'] = True 
 
@@ -29,12 +32,12 @@ if 'dark_mode' not in st.session_state:
 
 with st.sidebar:
     st.markdown("### ⚙️ Settings")
-    # The toggle will now start in the "On" position because the state is True
+    # Toggle switch for Dark/Light mode
     dark_mode = st.toggle("🌙 Dark Mode", value=st.session_state['dark_mode'], key="theme_toggle")
     st.session_state['dark_mode'] = dark_mode
     st.markdown("---")
 
-# --- UPDATED LIGHT MODE CSS (Yellow Sidebar + Light Green Toggle) ---
+# --- LIGHT MODE CSS ---
 LIGHT_MODE_CSS = """
 <style>
     /* Main Background - Fresh Mint Gradient */
@@ -160,9 +163,10 @@ LIGHT_MODE_CSS = """
 </style>
 """
 
-# --- DARK MODE CSS (UNCHANGED) ---
+# --- DARK MODE CSS ---
 DARK_MODE_CSS = """
 <style>
+    /* Main Background - Deep Slate/Navy */
     .stApp {
         background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
         color: #e2e8f0;
@@ -172,7 +176,7 @@ DARK_MODE_CSS = """
         font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     
-    /* Custom Toggle Switch for Dark Mode too */
+    /* Custom Toggle Switch for Dark Mode */
     div[data-testid="stToggle"] div[role="switch"] {
         border: 2px solid #4ade80 !important;
     }
@@ -180,6 +184,7 @@ DARK_MODE_CSS = """
         background-color: #4ade80 !important;
     }
 
+    /* Metric Cards - Glassmorphism */
     div[data-testid="stMetric"] {
         background: rgba(30, 41, 59, 0.8);
         backdrop-filter: blur(10px);
@@ -200,6 +205,8 @@ DARK_MODE_CSS = """
         font-weight: 700 !important;
         text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
     }
+    
+    /* Sidebar - Dark Gradient */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
         border-right: 2px solid rgba(34, 197, 94, 0.4);
@@ -207,6 +214,8 @@ DARK_MODE_CSS = """
     section[data-testid="stSidebar"] * {
         color: #e2e8f0 !important;
     }
+    
+    /* Headers */
     h1, h2, h3 {
         font-family: "Playfair Display", "Georgia", serif;
         color: #f1f5f9 !important;
@@ -218,6 +227,8 @@ DARK_MODE_CSS = """
         font-size: 1rem;
         font-weight: 500;
     }
+    
+    /* Radio Buttons */
     div[data-testid="stRadio"] label {
         color: #e2e8f0 !important;
         font-weight: 500 !important;
@@ -225,6 +236,8 @@ DARK_MODE_CSS = """
     div[data-testid="stRadio"] label span {
         color: #e2e8f0 !important;
     }
+    
+    /* Primary Button */
     div.stButton > button {
         background: linear-gradient(135deg, #22c55e, #16a34a);
         color: #ffffff !important;
@@ -240,6 +253,8 @@ DARK_MODE_CSS = """
         transform: translateY(-2px);
         box-shadow: 0 6px 25px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.3);
     }
+    
+    /* File Uploader */
     div[data-testid="stFileUploader"] {
         border-radius: 12px;
         background: rgba(30, 41, 59, 0.6);
@@ -253,6 +268,8 @@ DARK_MODE_CSS = """
     div[data-testid="stFileUploader"] label {
         color: #94a3b8 !important;
     }
+    
+    /* Data Tables */
     .stDataFrame {
         background: rgba(30, 41, 59, 0.8) !important;
         border-radius: 8px;
@@ -277,35 +294,35 @@ if st.session_state['dark_mode']:
 else:
     st.markdown(LIGHT_MODE_CSS, unsafe_allow_html=True)
 
-# --- 4. BACKEND LOGIC (UNCHANGED) ---
+# --- 4. BACKEND LOGIC: ASSET LOADING ---
 @st.cache_resource
 def load_assets():
+    # Dynamically find the path to the current folder
     base_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(base_dir, 'corn_model.h5')
     json_path = os.path.join(base_dir, 'classes.json')
 
     try:
         model = tf.keras.models.load_model(model_path)
-    except:
+    except Exception as e:
         return None, None
-        
     try:
         with open(json_path, 'r') as f:
             class_indices = json.load(f)
         label_map = {v: k for k, v in class_indices.items()}
-    except:
+    except Exception as e:
         label_map = None
-        
     return model, label_map
 
 model, label_map = load_assets()
 
 def process_and_predict(image_data, model):
+    # Resize image to match model input
     size = (224, 224)
     image = ImageOps.fit(image_data, size, Image.Resampling.LANCZOS)
     img_array = np.asarray(image)
-    img_array = img_array / 255.0
-    img_reshape = np.expand_dims(img_array, axis=0)
+    img_array = img_array / 255.0  # Normalize pixel values
+    img_reshape = np.expand_dims(img_array, axis=0) # Add batch dimension
     prediction = model.predict(img_reshape)
     return prediction
 
@@ -315,6 +332,7 @@ st.title("🌽 AgriScan Live Dashboard")
 st.markdown("<p class='small-muted'>Real-time quality control analytics for corn seed batches.</p>", unsafe_allow_html=True)
 st.markdown("---")
 
+# Metrics Row
 col1, col2, col3, col4 = st.columns(4)
 total_scans = sum(st.session_state['counts'].values())
 
@@ -329,12 +347,14 @@ with col4:
 
 st.markdown("---")
 
+# Main Content Layout
 main_col_1, main_col_2 = st.columns([1, 2])
 
 with main_col_1:
     st.subheader("🔍 Seed Scanner")
+    # Error handling if model is missing
     if model is None:
-        st.error("🚨 Model not found. Please upload 'corn_model.h5'.")
+        st.error("🚨 Model not found. Please upload 'corn_model.h5' and 'classes.json' to the same folder as app.py.")
         st.stop()
 
     mode = st.radio("Input Mode", ["Upload", "Camera"], horizontal=True)
@@ -346,7 +366,7 @@ with main_col_1:
 
     if file_input:
         image = Image.open(file_input)
-        st.image(image, caption="Current Specimen", use_column_width=True)
+        st.image(image, caption="Current Specimen", use_container_width=True)
         
         if st.button("Run Analysis", use_container_width=True):
             with st.spinner("Analyzing..."):
@@ -354,30 +374,38 @@ with main_col_1:
                 result_idx = np.argmax(preds)
                 confidence = np.max(preds) * 100
                 
-                if label_map:
-                    raw_label = label_map[result_idx].lower()
+                # --- INCORRECT PHOTO DETECTION ---
+                # Threshold Check: If confidence is < 70%, we assume it's NOT a corn seed.
+                if confidence < 70.0:
+                    st.error("🚨 Incorrect photo detected! Please upload a clear seed photo to analyze.")
                 else:
-                    raw_label = str(result_idx)
+                    # Proceed with standard classification
+                    if label_map:
+                        raw_label = label_map[result_idx].lower()
+                    else:
+                        raw_label = str(result_idx)
 
-                if "healthy" in raw_label:
-                    grade = "High"
-                elif "discolored" in raw_label or "silkcut" in raw_label:
-                    grade = "Medium"
-                else:
-                    grade = "Low"
+                    if "healthy" in raw_label:
+                        grade = "High"
+                    elif "discolored" in raw_label or "silkcut" in raw_label:
+                        grade = "Medium"
+                    else:
+                        grade = "Low"
 
-                st.session_state['counts'][grade] += 1
-                st.session_state['history'].append({
-                    "Grade": grade,
-                    "Confidence": f"{confidence:.1f}%",
-                    "Time": pd.Timestamp.now().strftime("%H:%M:%S")
-                })
-                
-                st.success(f"**Result: {grade} Quality** ({confidence:.1f}%)")
+                    # Update session state history and counts
+                    st.session_state['counts'][grade] += 1
+                    st.session_state['history'].append({
+                        "Grade": grade,
+                        "Confidence": f"{confidence:.1f}%",
+                        "Time": pd.Timestamp.now().strftime("%H:%M:%S")
+                    })
+                    
+                    st.success(f"**Result: {grade} Quality** ({confidence:.1f}%)")
 
 with main_col_2:
     st.subheader("📊 Batch Analytics")
     
+    # Create DataFrame for Altair Chart
     chart_data = pd.DataFrame([
         {"Quality": "High", "Count": st.session_state['counts']['High'], "Color": "#2ecc71"},
         {"Quality": "Medium", "Count": st.session_state['counts']['Medium'], "Color": "#f1c40f"},
@@ -385,6 +413,7 @@ with main_col_2:
     ])
 
     if total_scans > 0:
+        # Render Bar Chart
         c = alt.Chart(chart_data).mark_bar().encode(
             x='Quality',
             y='Count',
@@ -394,9 +423,10 @@ with main_col_2:
         
         st.altair_chart(c, use_container_width=True)
         
+        # Render History Table
         st.write("**Recent Scans Log:**")
         if len(st.session_state['history']) > 0:
             df_hist = pd.DataFrame(st.session_state['history'])
-            st.dataframe(df_hist.tail(5), use_column_width=True)
+            st.dataframe(df_hist.tail(5), use_container_width=True)
     else:
         st.info("Waiting for data... Scan a seed to see analytics.")
